@@ -35,8 +35,7 @@ export default async function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              Finance Tracker
-              <span className="block text-emerald-600">Workspace</span>
+              Finance Tracker Workspace
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
               Create secure, password-protected project workspaces to manage your income and expenses. 
@@ -45,7 +44,7 @@ export default async function HomePage() {
           </div>
 
           {/* Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {[
               {
                 icon: Shield,
@@ -76,25 +75,17 @@ export default async function HomePage() {
                 </CardContent>
               </Card>
             ))}
-          </div>
+          </div> */}
 
           {/* Main Action Area */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Access Existing Project */}
             <div className="space-y-6">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Project</h2>
-                <p className="text-gray-600">Enter your project workspace</p>
-              </div>
               <ProjectAccessForm projects={projects as ProjectSummary[]} />
             </div>
 
             {/* Create New Project */}
             <div className="space-y-6">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Create Project</h2>
-                <p className="text-gray-600">Start a new finance workspace</p>
-              </div>
               <Card className="p-6 text-center">
                 <CardHeader>
                   <CardTitle className="text-lg">New Project Workspace</CardTitle>
