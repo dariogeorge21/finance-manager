@@ -38,19 +38,14 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
   
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<IncomeFormData>({
     resolver: zodResolver(incomeSchema),
-    defaultValues: editData ? {
-      name: editData.name,
-      phone_number: editData.phone_number || '',
-      called_by: (editData as any).called_by || '',
-      amount: editData.amount,
-      description: editData.description || '',
-      date: editData.date,
-      called_status: editData.called_status,
-    } : {
+    defaultValues: {
       date: new Date().toISOString().split('T')[0],
       called_status: false,
       amount: 0,
       called_by: '',
+      name: '',
+      phone_number: '',
+      description: '',
     }
   })
 
@@ -87,6 +82,33 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
     setDateInput(formatISOToDDMMYYYY(current))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch('date')])
+
+  // Handle editData changes - reset form when editData changes
+  useEffect(() => {
+    if (editData) {
+      reset({
+        name: editData.name,
+        phone_number: editData.phone_number || '',
+        called_by: editData.called_by || '',
+        amount: editData.amount,
+        description: editData.description || '',
+        date: editData.date,
+        called_status: editData.called_status,
+      })
+      setDateInput(formatISOToDDMMYYYY(editData.date))
+    } else {
+      reset({
+        date: new Date().toISOString().split('T')[0],
+        called_status: false,
+        amount: 0,
+        called_by: '',
+        name: '',
+        phone_number: '',
+        description: '',
+      })
+      setDateInput(formatISOToDDMMYYYY(new Date().toISOString().split('T')[0]))
+    }
+  }, [editData, reset])
 
   const onSubmit = async (data: IncomeFormData) => {
     setIsLoading(true)

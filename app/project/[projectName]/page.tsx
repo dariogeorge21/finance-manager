@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { IncomeForm } from '@/components/income-form'
 import { ExpenseForm } from '@/components/expense-form'
 import { FinancialCharts } from '@/components/financial-charts'
@@ -55,6 +56,10 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
   const [incomePage, setIncomePage] = useState(1)
   const [expensePage, setExpensePage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
+  
+  // Confirmation dialog states
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+  const [deleteItem, setDeleteItem] = useState<{ id: string; type: 'income' | 'expense'; name: string } | null>(null)
 
   useEffect(() => {
     const initializeProject = async () => {
@@ -134,42 +139,41 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
   const totalIncomePages = getTotalPages(income.length)
   const totalExpensePages = getTotalPages(expenses.length)
 
-  const handleDeleteIncome = async (id: string) => {
-    if (!projectAuth) return
+  const confirmDelete = (id: string, type: 'income' | 'expense', name: string) => {
+    setDeleteItem({ id, type, name })
+    setDeleteConfirmOpen(true)
+  }
 
+  const handleDeleteConfirmed = async () => {
+    if (!projectAuth || !deleteItem) return
+
+    const { id, type } = deleteItem
+    
     try {
-      const response = await fetch(`/api/projects/${projectAuth.project_id}/income/${id}`, {
+      const response = await fetch(`/api/projects/${projectAuth.project_id}/${type}/${id}`, {
         method: 'DELETE',
       })
 
       if (response.ok) {
-        toast.success('Income deleted successfully')
+        toast.success(`${type === 'income' ? 'Income' : 'Expense'} deleted successfully`)
         fetchData(projectAuth.project_id)
       } else {
-        toast.error('Failed to delete income')
+        toast.error(`Failed to delete ${type}`)
       }
     } catch (error) {
       toast.error('Network error')
+    } finally {
+      setDeleteConfirmOpen(false)
+      setDeleteItem(null)
     }
   }
 
-  const handleDeleteExpense = async (id: string) => {
-    if (!projectAuth) return
+  const handleDeleteIncome = (id: string, name: string) => {
+    confirmDelete(id, 'income', name)
+  }
 
-    try {
-      const response = await fetch(`/api/projects/${projectAuth.project_id}/expenses/${id}`, {
-        method: 'DELETE',
-      })
-
-      if (response.ok) {
-        toast.success('Expense deleted successfully')
-        fetchData(projectAuth.project_id)
-      } else {
-        toast.error('Failed to delete expense')
-      }
-    } catch (error) {
-      toast.error('Network error')
-    }
+  const handleDeleteExpense = (id: string, description: string) => {
+    confirmDelete(id, 'expense', description)
   }
 
   const handleExportIncome = async () => {
@@ -436,7 +440,7 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    onClick={() => handleDeleteIncome(item.id)}
+                                    onClick={() => handleDeleteIncome(item.id, item.name)}
                                   >
                                     <Trash2 className="w-3 h-3" />
                                   </Button>
@@ -507,7 +511,7 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => handleDeleteIncome(item.id)}
+                                onClick={() => handleDeleteIncome(item.id, item.name)}
                                 className="flex-1"
                               >
                                 <Trash2 className="w-3 h-3 mr-1" />
@@ -629,7 +633,7 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    onClick={() => handleDeleteExpense(item.id)}
+                                    onClick={() => handleDeleteExpense(item.id, item.description)}
                                   >
                                     <Trash2 className="w-3 h-3" />
                                   </Button>
@@ -677,7 +681,7 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => handleDeleteExpense(item.id)}
+                                onClick={() => handleDeleteExpense(item.id, item.description)}
                                 className="flex-1"
                               >
                                 <Trash2 className="w-3 h-3 mr-1" />
@@ -751,6 +755,33 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
         projectId={projectAuth.project_id}
         editData={editingExpense}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this {deleteItem?.type} entry "{deleteItem?.name}"?
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setDeleteConfirmOpen(false)
+              setDeleteItem(null)
+            }}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteConfirmed}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
