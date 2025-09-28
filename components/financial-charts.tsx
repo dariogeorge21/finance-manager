@@ -26,6 +26,37 @@ export function FinancialCharts({ stats }: FinancialChartsProps) {
     },
   ]
 
+  // Check if there's any financial data
+  const hasData = stats.totalIncome > 0 || stats.totalExpenses > 0
+
+  if (!hasData) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Income vs Expenses</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 flex items-center justify-center text-gray-500">
+              No financial records
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Financial Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 flex items-center justify-center text-gray-500">
+              No financial records
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
