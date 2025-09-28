@@ -124,7 +124,7 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[80vh] sm:max-h-[70vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{editData ? 'Edit Income' : 'Add New Income'}</DialogTitle>
           <DialogDescription>
