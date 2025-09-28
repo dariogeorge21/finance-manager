@@ -30,7 +30,7 @@ export default async function HomePage() {
       <Toaster />
       
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden min-h-screen">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-blue-500/10" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
@@ -42,41 +42,6 @@ export default async function HomePage() {
               Track your finances with real-time analytics and beautiful visualizations.
             </p>
           </div>
-
-          {/* Feature Cards */}
-          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {[
-              {
-                icon: Shield,
-                title: 'Secure Workspaces',
-                description: 'Password-protected projects for complete privacy'
-              },
-              {
-                icon: TrendingUp,
-                title: 'Real-time Analytics',
-                description: 'Live financial summaries and insights'
-              },
-              {
-                icon: BarChart3,
-                title: 'Visual Reports',
-                description: 'Charts and graphs for better understanding'
-              },
-              {
-                icon: Users,
-                title: 'Multi-tenant',
-                description: 'Multiple projects with independent data'
-              }
-            ].map((feature, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300">
-                <CardContent className="pt-6">
-                  <feature.icon className="w-12 h-12 text-emerald-600 mx-auto mb-4" />
-                  <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                  <p className="text-sm text-gray-600">{feature.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div> */}
-
           {/* Main Action Area */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Access Existing Project */}
@@ -99,25 +64,6 @@ export default async function HomePage() {
               </Card>
             </div>
           </div>
-
-          {/* Project List */}
-          {projects.length > 0 && (
-            <div className="mt-16 max-w-4xl mx-auto">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Available Projects</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {projects.map((project) => (
-                  <Card key={project.id} className="hover:shadow-md transition-shadow duration-200">
-                    <CardContent className="p-4">
-                      <h4 className="font-semibold text-gray-900 mb-1">{project.project_name}</h4>
-                      <p className="text-sm text-gray-500">
-                        Created {new Date(project.created_at).toLocaleDateString()}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

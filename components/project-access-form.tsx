@@ -27,11 +27,36 @@ interface ProjectAccessFormProps {
 
 export function ProjectAccessForm({ projects }: ProjectAccessFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [projectInput, setProjectInput] = useState('')
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [filteredProjects, setFilteredProjects] = useState<ProjectSummary[]>([])
   const router = useRouter()
   
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<AccessFormData>({
     resolver: zodResolver(accessSchema),
   })
+
+  const handleProjectInputChange = (value: string) => {
+    setProjectInput(value)
+    setValue('project_name', value)
+    
+    if (value.length > 0) {
+      const filtered = projects.filter(project =>
+        project.project_name.toLowerCase().includes(value.toLowerCase())
+      )
+      setFilteredProjects(filtered)
+      setShowSuggestions(true)
+    } else {
+      setShowSuggestions(false)
+      setFilteredProjects([])
+    }
+  }
+
+  const handleSuggestionClick = (projectName: string) => {
+    setProjectInput(projectName)
+    setValue('project_name', projectName)
+    setShowSuggestions(false)
+  }
 
   const onSubmit = async (data: AccessFormData) => {
     setIsLoading(true)
@@ -53,20 +78,24 @@ export function ProjectAccessForm({ projects }: ProjectAccessFormProps) {
           authenticated_at: Date.now()
         }))
         
-        router.push(`/project/${encodeURIComponent(data.project_name)}`)
         toast.success('Access granted! Redirecting to dashboard...')
+        
+        // Keep loading state active during navigation
+        setTimeout(() => {
+          router.push(`/project/${encodeURIComponent(data.project_name)}`)
+        }, 1000)
       } else {
         toast.error(result.error || 'Authentication failed')
+        setIsLoading(false)
       }
     } catch (error) {
       toast.error('Network error. Please try again.')
-    } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md p-6">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">Access Project</CardTitle>
         <CardDescription className="text-center">
@@ -75,20 +104,32 @@ export function ProjectAccessForm({ projects }: ProjectAccessFormProps) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
+          <div className="space-y-2 relative">
             <Label htmlFor="project_name">Project Name</Label>
-            <Select onValueChange={(value) => setValue('project_name', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a project" />
-              </SelectTrigger>
-              <SelectContent>
-                {projects.map((project) => (
-                  <SelectItem key={project.id} value={project.project_name}>
+            <Input
+              id="project_name"
+              type="text"
+              placeholder="Enter project name"
+              value={projectInput}
+              onChange={(e) => handleProjectInputChange(e.target.value)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+              onFocus={() => {
+                if (projectInput.length > 0) setShowSuggestions(true)
+              }}
+            />
+            {showSuggestions && filteredProjects.length > 0 && (
+              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                {filteredProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                    onClick={() => handleSuggestionClick(project.project_name)}
+                  >
                     {project.project_name}
-                  </SelectItem>
+                  </div>
                 ))}
-              </SelectContent>
-            </Select>
+              </div>
+            )}
             {errors.project_name && (
               <p className="text-sm text-destructive">{errors.project_name.message}</p>
             )}
@@ -107,7 +148,7 @@ export function ProjectAccessForm({ projects }: ProjectAccessFormProps) {
             )}
           </div>
           
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full bg-white text-black hover:text-white hover:bg-black" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Skeleton className="w-4 h-4 mr-2" />
