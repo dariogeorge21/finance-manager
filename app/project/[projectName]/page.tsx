@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { IncomeForm } from '@/components/income-form'
 import { ExpenseForm } from '@/components/expense-form'
 import { FinancialCharts } from '@/components/financial-charts'
@@ -27,7 +28,9 @@ import {
   Trash2,
   Phone,
   PhoneOff,
-  LogOut
+  LogOut,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 
 interface ProjectAuth {
@@ -47,6 +50,11 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
   const [showExpenseForm, setShowExpenseForm] = useState(false)
   const [editingIncome, setEditingIncome] = useState<Income | null>(null)
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
+  
+  // Pagination states
+  const [incomePage, setIncomePage] = useState(1)
+  const [expensePage, setExpensePage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
 
   useEffect(() => {
     const initializeProject = async () => {
@@ -85,8 +93,8 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
     try {
       const [statsRes, incomeRes, expensesRes] = await Promise.all([
         fetch(`/api/projects/${projectId}/stats`),
-        fetch(`/api/projects/${projectId}/income?limit=10`),
-        fetch(`/api/projects/${projectId}/expenses?limit=10`)
+        fetch(`/api/projects/${projectId}/income`),
+        fetch(`/api/projects/${projectId}/expenses`)
       ])
 
       const [statsData, incomeData, expensesData] = await Promise.all([
@@ -109,6 +117,22 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
     sessionStorage.removeItem('project_auth')
     router.push('/')
   }
+
+  // Pagination helpers
+  const getPaginatedData = (data: any[], page: number) => {
+    const startIndex = (page - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
+    return data.slice(startIndex, endIndex)
+  }
+
+  const getTotalPages = (dataLength: number) => {
+    return Math.ceil(dataLength / itemsPerPage)
+  }
+
+  const paginatedIncome = getPaginatedData(income, incomePage)
+  const paginatedExpenses = getPaginatedData(expenses, expensePage)
+  const totalIncomePages = getTotalPages(income.length)
+  const totalExpensePages = getTotalPages(expenses.length)
 
   const handleDeleteIncome = async (id: string) => {
     if (!projectAuth) return
@@ -309,56 +333,165 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
           <TabsContent value="income">
             <Card>
               <CardHeader>
-                <CardTitle>Recent Income Entries</CardTitle>
-                <CardDescription>Latest income transactions</CardDescription>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
+                  <div>
+                    <CardTitle>Income Entries</CardTitle>
+                    <CardDescription>
+                      {income.length > 0 ? `Showing ${((incomePage - 1) * itemsPerPage) + 1}-${Math.min(incomePage * itemsPerPage, income.length)} of ${income.length} entries` : 'No entries'}
+                    </CardDescription>
+                  </div>
+                  {income.length > 0 && (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-500">Items per page:</span>
+                      <Select value={itemsPerPage.toString()} onValueChange={(value) => {
+                        setItemsPerPage(parseInt(value))
+                        setIncomePage(1)
+                      }}>
+                        <SelectTrigger className="w-20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="5">5</SelectItem>
+                          <SelectItem value="10">10</SelectItem>
+                          <SelectItem value="20">20</SelectItem>
+                          <SelectItem value="50">50</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 {income.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Phone</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Called</TableHead>
-                        <TableHead>Called By</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {income.map((item) => (
-                        <TableRow key={item.id}>
-                          <TableCell className="font-medium">{item.name}</TableCell>
-                          <TableCell>
-                            {item.phone_number ? (
-                              <span className="text-sm">{item.phone_number}</span>
-                            ) : (
-                              <span className="text-gray-400 text-sm">NIL</span>
-                            )}
-                          </TableCell>
-                          <TableCell className="font-semibold text-emerald-600">
-                            {formatCurrency(item.amount)}
-                          </TableCell>
-                          <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
-                          <TableCell>
-                            <Badge variant={item.called_status ? "default" : "secondary"}>
-                              {item.called_status ? (
-                                <><Phone className="w-3 h-3 mr-1" />Called</>
-                              ) : (
-                                <><PhoneOff className="w-3 h-3 mr-1" />Not Called</>
+                  <>
+                    {/* Desktop Table */}
+                    <div className="hidden md:block">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Phone</TableHead>
+                            <TableHead>Amount</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Called</TableHead>
+                            <TableHead>Called By</TableHead>
+                            <TableHead>Called Notes</TableHead>
+                            <TableHead>Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {paginatedIncome.map((item) => (
+                            <TableRow key={item.id}>
+                              <TableCell className="font-medium">{item.name}</TableCell>
+                              <TableCell>
+                                {item.phone_number ? (
+                                  <span className="text-sm">{item.phone_number}</span>
+                                ) : (
+                                  <span className="text-gray-400 text-sm">-</span>
+                                )}
+                              </TableCell>
+                              <TableCell className="font-semibold text-emerald-600">
+                                {formatCurrency(item.amount)}
+                              </TableCell>
+                              <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
+                              <TableCell>
+                                <Badge variant={item.called_status ? "default" : "secondary"}>
+                                  {item.called_status ? (
+                                    <><Phone className="w-3 h-3 mr-1" />Called</>
+                                  ) : (
+                                    <><PhoneOff className="w-3 h-3 mr-1" />Not Called</>
+                                  )}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                {item.called_by ? (
+                                  <span className="text-sm">{item.called_by}</span>
+                                ) : (
+                                  <span className="text-gray-400 text-sm">-</span>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                {item.description ? (
+                                  <div className="max-w-xs">
+                                    <span className="text-sm text-gray-600 line-clamp-2">
+                                      {item.description}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span className="text-gray-400 text-sm">-</span>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex space-x-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      setEditingIncome(item)
+                                      setShowIncomeForm(true)
+                                    }}
+                                  >
+                                    <Edit className="w-3 h-3" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleDeleteIncome(item.id)}
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+
+                    {/* Mobile Cards */}
+                    <div className="md:hidden space-y-4">
+                      {paginatedIncome.map((item) => (
+                        <Card key={item.id} className="p-4">
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-medium text-lg">{item.name}</h3>
+                                <p className="text-sm text-gray-500">
+                                  {item.phone_number || 'No phone number'}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-semibold text-emerald-600 text-lg">
+                                  {formatCurrency(item.amount)}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {new Date(item.date).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex flex-wrap gap-2">
+                              <Badge variant={item.called_status ? "default" : "secondary"}>
+                                {item.called_status ? (
+                                  <><Phone className="w-3 h-3 mr-1" />Called</>
+                                ) : (
+                                  <><PhoneOff className="w-3 h-3 mr-1" />Not Called</>
+                                )}
+                              </Badge>
+                              {item.called_by && (
+                                <Badge variant="outline">
+                                  By: {item.called_by}
+                                </Badge>
                               )}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {item.called_by ? (
-                              <span className="text-sm">{item.called_by}</span>
-                            ) : (
-                              <span className="text-gray-400 text-sm">NIL</span>
+                            </div>
+
+                            {item.description && (
+                              <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                                {item.description}
+                              </p>
                             )}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex space-x-2">
+
+                            <div className="flex space-x-2 pt-2">
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -366,22 +499,55 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                                   setEditingIncome(item)
                                   setShowIncomeForm(true)
                                 }}
+                                className="flex-1"
                               >
-                                <Edit className="w-3 h-3" />
+                                <Edit className="w-3 h-3 mr-1" />
+                                Edit
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleDeleteIncome(item.id)}
+                                className="flex-1"
                               >
-                                <Trash2 className="w-3 h-3" />
+                                <Trash2 className="w-3 h-3 mr-1" />
+                                Delete
                               </Button>
                             </div>
-                          </TableCell>
-                        </TableRow>
+                          </div>
+                        </Card>
                       ))}
-                    </TableBody>
-                  </Table>
+                    </div>
+
+                    {/* Pagination */}
+                    {totalIncomePages > 1 && (
+                      <div className="flex items-center justify-between mt-6 pt-4 border-t">
+                        <div className="text-sm text-gray-500">
+                          Page {incomePage} of {totalIncomePages}
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIncomePage(Math.max(1, incomePage - 1))}
+                            disabled={incomePage === 1}
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                            Previous
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIncomePage(Math.min(totalIncomePages, incomePage + 1))}
+                            disabled={incomePage === totalIncomePages}
+                          >
+                            Next
+                            <ChevronRight className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div className="text-center py-8 text-gray-500">
                     No income entries yet. Add your first income entry!
@@ -394,34 +560,108 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
           <TabsContent value="expenses">
             <Card>
               <CardHeader>
-                <CardTitle>Recent Expense Entries</CardTitle>
-                <CardDescription>Latest expense transactions</CardDescription>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
+                  <div>
+                    <CardTitle>Expense Entries</CardTitle>
+                    <CardDescription>
+                      {expenses.length > 0 ? `Showing ${((expensePage - 1) * itemsPerPage) + 1}-${Math.min(expensePage * itemsPerPage, expenses.length)} of ${expenses.length} entries` : 'No entries'}
+                    </CardDescription>
+                  </div>
+                  {expenses.length > 0 && (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-500">Items per page:</span>
+                      <Select value={itemsPerPage.toString()} onValueChange={(value) => {
+                        setItemsPerPage(parseInt(value))
+                        setExpensePage(1)
+                      }}>
+                        <SelectTrigger className="w-20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="5">5</SelectItem>
+                          <SelectItem value="10">10</SelectItem>
+                          <SelectItem value="20">20</SelectItem>
+                          <SelectItem value="50">50</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 {expenses.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {expenses.map((item) => (
-                        <TableRow key={item.id}>
-                          <TableCell className="font-medium">{item.description}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{item.category}</Badge>
-                          </TableCell>
-                          <TableCell className="font-semibold text-red-600">
-                            {formatCurrency(item.amount)}
-                          </TableCell>
-                          <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
-                          <TableCell>
-                            <div className="flex space-x-2">
+                  <>
+                    {/* Desktop Table */}
+                    <div className="hidden md:block">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Description</TableHead>
+                            <TableHead>Category</TableHead>
+                            <TableHead>Amount</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {paginatedExpenses.map((item) => (
+                            <TableRow key={item.id}>
+                              <TableCell className="font-medium">{item.description}</TableCell>
+                              <TableCell>
+                                <Badge variant="outline">{item.category}</Badge>
+                              </TableCell>
+                              <TableCell className="font-semibold text-red-600">
+                                {formatCurrency(item.amount)}
+                              </TableCell>
+                              <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
+                              <TableCell>
+                                <div className="flex space-x-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      setEditingExpense(item)
+                                      setShowExpenseForm(true)
+                                    }}
+                                  >
+                                    <Edit className="w-3 h-3" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleDeleteExpense(item.id)}
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+
+                    {/* Mobile Cards */}
+                    <div className="md:hidden space-y-4">
+                      {paginatedExpenses.map((item) => (
+                        <Card key={item.id} className="p-4">
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <h3 className="font-medium text-lg">{item.description}</h3>
+                                <Badge variant="outline" className="mt-1">{item.category}</Badge>
+                              </div>
+                              <div className="text-right ml-4">
+                                <p className="font-semibold text-red-600 text-lg">
+                                  {formatCurrency(item.amount)}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {new Date(item.date).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex space-x-2 pt-2">
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -429,22 +669,55 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                                   setEditingExpense(item)
                                   setShowExpenseForm(true)
                                 }}
+                                className="flex-1"
                               >
-                                <Edit className="w-3 h-3" />
+                                <Edit className="w-3 h-3 mr-1" />
+                                Edit
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleDeleteExpense(item.id)}
+                                className="flex-1"
                               >
-                                <Trash2 className="w-3 h-3" />
+                                <Trash2 className="w-3 h-3 mr-1" />
+                                Delete
                               </Button>
                             </div>
-                          </TableCell>
-                        </TableRow>
+                          </div>
+                        </Card>
                       ))}
-                    </TableBody>
-                  </Table>
+                    </div>
+
+                    {/* Pagination */}
+                    {totalExpensePages > 1 && (
+                      <div className="flex items-center justify-between mt-6 pt-4 border-t">
+                        <div className="text-sm text-gray-500">
+                          Page {expensePage} of {totalExpensePages}
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setExpensePage(Math.max(1, expensePage - 1))}
+                            disabled={expensePage === 1}
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                            Previous
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setExpensePage(Math.min(totalExpensePages, expensePage + 1))}
+                            disabled={expensePage === totalExpensePages}
+                          >
+                            Next
+                            <ChevronRight className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div className="text-center py-8 text-gray-500">
                     No expense entries yet. Add your first expense entry!
