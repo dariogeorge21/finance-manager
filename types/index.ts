@@ -15,6 +15,7 @@ export interface Income {
   description?: string
   date: string
   called_status: boolean
+  called_by?: string
   created_at: string
 }
 
@@ -53,6 +54,7 @@ export interface CreateIncomeData {
   description?: string
   date: string
   called_status?: boolean
+  called_by?: string
 }
 
 export interface CreateExpenseData {

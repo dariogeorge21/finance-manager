@@ -92,7 +92,7 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
     setIsLoading(true)
     
     try {
-      const url = editData ? `/api/projects/${projectId}/income/${editData.id}` : `/api/projects/${projectId}/incomes`
+      const url = editData ? `/api/projects/${projectId}/income/${editData.id}` : `/api/projects/${projectId}/income`
       const method = editData ? 'PUT' : 'POST'
       
       const response = await fetch(url, {

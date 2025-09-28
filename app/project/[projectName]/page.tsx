@@ -322,6 +322,7 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                         <TableHead>Amount</TableHead>
                         <TableHead>Date</TableHead>
                         <TableHead>Called</TableHead>
+                        <TableHead>Called By</TableHead>
                         <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -333,7 +334,7 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                             {item.phone_number ? (
                               <span className="text-sm">{item.phone_number}</span>
                             ) : (
-                              <span className="text-gray-400 text-sm">-</span>
+                              <span className="text-gray-400 text-sm">NIL</span>
                             )}
                           </TableCell>
                           <TableCell className="font-semibold text-emerald-600">
@@ -348,6 +349,13 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                                 <><PhoneOff className="w-3 h-3 mr-1" />Not Called</>
                               )}
                             </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {item.called_by ? (
+                              <span className="text-sm">{item.called_by}</span>
+                            ) : (
+                              <span className="text-gray-400 text-sm">NIL</span>
+                            )}
                           </TableCell>
                           <TableCell>
                             <div className="flex space-x-2">

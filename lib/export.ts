@@ -10,6 +10,7 @@ export const exportIncomeToCSV = (incomeData: Income[], projectName: string) => 
     'Description': item.description || '',
     'Date': item.date,
     'Called Status': item.called_status ? 'Yes' : 'No',
+    'Called By': item.called_by || '',
     'Created At': new Date(item.created_at).toLocaleDateString()
   }))
   
