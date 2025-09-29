@@ -37,16 +37,6 @@ export default async function HomePage() {
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
               Finance Tracker Workspace
             </h1>
-  const useCases = [
-    {
-      title: "Remote Businesses",
-      description: "Companies with remote teams needing a professional business address and mail handling services.",
-      icon: CloudIcon
-    },
-    {
-      title: "Startups & Entrepreneurs",
-      description: "New businesses requiring a credible address for registration and professional communications.",
-
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
               Create secure, password-protected project workspaces to manage your income and expenses. 
               Track your finances with real-time analytics and beautiful visualizations.
