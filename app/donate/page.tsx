@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Heart, Users, BookOpen, Sparkles, ArrowRight, Home, Loader2 } from 'lucide-react'
+import { Heart, Users, BookOpen, Sparkles, ArrowRight, DollarSign, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function DonatePage() {
@@ -52,10 +52,10 @@ export default function DonatePage() {
               <h1 className="text-2xl font-bold text-gray-900">Veritas-25 Donation</h1>
               <p className="text-sm text-gray-500">Support our mission</p>
             </div>
-            <Link href="/">
+            <Link href="/donate/form">
               <Button variant="outline">
-                <Home className="w-4 h-4 mr-2" />
-                Back to Home
+                <DollarSign className="w-4 h-4 mr-2" />
+                Donate Now
               </Button>
             </Link>
           </div>
@@ -67,8 +67,12 @@ export default function DonatePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-rose-500/10 to-pink-500/10" />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-rose-500 to-pink-600 rounded-full mb-6">
-              <Heart className="w-10 h-10 text-white" fill="currentColor" />
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-white-500 to-white-600 rounded-full mb-6 p-2">
+              <img 
+                src="https://jesusyouth.org.au/wp-content/uploads/2013/10/jy-logo-only-Fine.png" 
+                alt="Jesus Youth Logo" 
+                className="w-20 h-20 object-contain"
+              />
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Support <strong>Veritas 2025</strong>
