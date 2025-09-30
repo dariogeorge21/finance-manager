@@ -73,3 +73,30 @@ export interface Project extends ProjectSummary {
   password_hash: string;
   updated_at: string;
 }
+
+export interface DonationData {
+  name: string
+  phone_number: string
+  amount: number
+  message?: string
+}
+
+export interface RazorpayOrder {
+  id: string
+  entity: string
+  amount: number
+  amount_paid: number
+  amount_due: number
+  currency: string
+  receipt: string
+  status: string
+  attempts: number
+  notes: Record<string, string>
+  created_at: number
+}
+
+export interface RazorpayPaymentResponse {
+  razorpay_order_id: string
+  razorpay_payment_id: string
+  razorpay_signature: string
+}

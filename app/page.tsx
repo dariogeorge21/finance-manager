@@ -3,8 +3,9 @@ import { ProjectAccessForm } from '@/components/project-access-form'
 import { CreateProjectForm } from '@/components/create-project-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Toaster } from '@/components/ui/sonner'
-import { TrendingUp, Shield, Users, BarChart3 } from 'lucide-react'
+import { TrendingUp, Shield, Users, BarChart3, Heart } from 'lucide-react'
 import { ProjectSummary } from '@/types'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -63,6 +64,38 @@ export default async function HomePage() {
                 </CardContent>
               </Card>
             </div> */}
+          </div>
+
+          {/* Donation Card */}
+          <div className="max-w-4xl mx-auto mt-12">
+            <Link href="/donate">
+              <Card className="bg-gradient-to-r from-rose-500 to-pink-600 text-white hover:from-rose-600 hover:to-pink-700 transition-all duration-300 cursor-pointer transform hover:scale-[1.02] shadow-lg hover:shadow-xl">
+                <CardContent className="p-8">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Heart className="w-8 h-8 text-white" fill="currentColor" />
+                        <h2 className="text-2xl font-bold">Donate for Veritas-25</h2>
+                      </div>
+                      <p className="text-rose-100 text-lg mb-2">
+                        Support our mission to enrich college students in the love of God
+                      </p>
+                      <p className="text-rose-50 text-sm">
+                        Your contribution helps us organize spiritual programs and activities for students
+                      </p>
+                    </div>
+                    <div className="hidden md:block ml-6">
+                      <div className="bg-white/20 backdrop-blur-sm rounded-full p-4">
+                        <Heart className="w-12 h-12 text-white" fill="currentColor" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-6 flex items-center text-rose-50">
+                    <span className="text-sm font-medium">Click to learn more and donate →</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
         </div>
       </div>
