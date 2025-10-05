@@ -67,15 +67,15 @@ export default async function HomePage() {
           </div>
 
           {/* Donation Card */}
-          <div className="max-w-4xl mx-auto mt-12">
-            <Link href="/donate">
+          {/* <div className="max-w-4xl mx-auto mt-12">
+            <Link href="/contribute">
               <Card className="bg-gradient-to-r from-rose-500 to-pink-600 text-white hover:from-rose-600 hover:to-pink-700 transition-all duration-300 cursor-pointer transform hover:scale-[1.02] shadow-lg hover:shadow-xl">
                 <CardContent className="p-8">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-3">
                         <Heart className="w-8 h-8 text-white" fill="currentColor" />
-                        <h2 className="text-2xl font-bold">Donate for Veritas-25</h2>
+                        <h2 className="text-2xl font-bold">Contribute for Veritas-25</h2>
                       </div>
                       <p className="text-rose-100 text-lg mb-2">
                         Support our mission to enrich college students in the love of God
@@ -91,12 +91,12 @@ export default async function HomePage() {
                     </div>
                   </div>
                   <div className="mt-6 flex items-center text-rose-50">
-                    <span className="text-sm font-medium">Click to learn more and donate →</span>
+                    <span className="text-sm font-medium">Click to learn more and contribute →</span>
                   </div>
                 </CardContent>
               </Card>
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
