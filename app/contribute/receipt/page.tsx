@@ -18,16 +18,16 @@ type ReceiptData = {
   datetime: string
 }
 
-export default function DonationReceiptPage() {
+export default function ContributionReceiptPage() {
   const router = useRouter()
   const [data, setData] = useState<ReceiptData | null>(null)
   const [isNavigating, setIsNavigating] = useState(false)
 
   useEffect(() => {
     try {
-      const raw = sessionStorage.getItem('donation_receipt')
+      const raw = sessionStorage.getItem('contribution_receipt')
       if (!raw) {
-        toast.error('Receipt data not found. Please make a donation first.')
+        toast.error('Receipt data not found. Please make a contribution first.')
         return
       }
       const parsed: ReceiptData = JSON.parse(raw)
@@ -41,11 +41,11 @@ export default function DonationReceiptPage() {
     window.print()
   }
 
-  const handleMakeAnotherDonation = () => {
+  const handleMakeAnotherContribution = () => {
     setIsNavigating(true)
     // Wait 1.5 seconds before navigating
     setTimeout(() => {
-      router.push('/donate/form')
+      router.push('/contribute/form')
     }, 1500)
   }
 
@@ -82,8 +82,8 @@ export default function DonationReceiptPage() {
                   <Loader2 className="w-10 h-10 text-white animate-spin" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-bold text-gray-900">Preparing Donation Form...</h3>
-                  <p className="text-gray-600">Thank you for considering another donation</p>
+                  <h3 className="text-2xl font-bold text-gray-900">Preparing Contribution Form...</h3>
+                  <p className="text-gray-600">Thank you for considering another contribution</p>
                 </div>
                 <div className="flex items-center justify-center space-x-1">
                   <div className="w-2 h-2 bg-rose-500 rounded-full animate-bounce"></div>
@@ -105,7 +105,7 @@ export default function DonationReceiptPage() {
                 <CheckCircle2 className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
               </div>
               <div className="min-w-0 flex-1">
-                <CardTitle className="text-lg sm:text-2xl truncate">Donation Receipt</CardTitle>
+                <CardTitle className="text-lg sm:text-2xl truncate">Contribution Receipt</CardTitle>
                 <CardDescription className="text-sm sm:text-base">Payment Successful — Veritas-25</CardDescription>
               </div>
             </div>
@@ -115,10 +115,10 @@ export default function DonationReceiptPage() {
             {!data ? (
               <div className="text-center py-6 sm:py-8">
                 <p className="text-gray-700 mb-2 font-medium text-sm sm:text-base">We couldn't find your receipt details.</p>
-                <p className="text-gray-500 mb-4 sm:mb-6 text-sm sm:text-base">If you just completed a donation, please return to the donation form and try again.</p>
+                <p className="text-gray-500 mb-4 sm:mb-6 text-sm sm:text-base">If you just completed a contribution, please return to the contribution form and try again.</p>
                 <div className="flex items-center justify-center gap-3">
                   <Button 
-                    onClick={handleMakeAnotherDonation}
+                    onClick={handleMakeAnotherContribution}
                     disabled={isNavigating}
                     className="bg-gradient-to-r from-rose-500 to-pink-600 text-white no-print"
                   >
@@ -130,7 +130,7 @@ export default function DonationReceiptPage() {
                     ) : (
                       <>
                         <Repeat className="w-4 h-4 mr-2" />
-                        Make a Donation
+                        Make a Contribution
                       </>
                     )}
                   </Button>
@@ -145,11 +145,11 @@ export default function DonationReceiptPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 bg-white/70 rounded-lg border p-3 sm:p-4">
                   <div>
-                    <p className="text-sm text-gray-500">Donor Name</p>
+                    <p className="text-sm text-gray-500">Contributor Name</p>
                     <p className="font-medium text-gray-900 break-words">{data.name}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Donation Amount</p>
+                    <p className="text-sm text-gray-500">Contribution Amount</p>
                     <p className="font-semibold text-gray-900">₹ {data.amount.toLocaleString('en-IN')}</p>
                   </div>
                   <div>
@@ -185,7 +185,7 @@ export default function DonationReceiptPage() {
             <div className="flex items-center gap-3 no-print">
               <Button 
                 variant="outline"
-                onClick={handleMakeAnotherDonation}
+                onClick={handleMakeAnotherContribution}
                 disabled={isNavigating}
                 className="w-full sm:w-auto text-sm sm:text-base"
               >
@@ -197,7 +197,7 @@ export default function DonationReceiptPage() {
                 ) : (
                   <>
                     <Repeat className="w-4 h-4 mr-2" />
-                    <span className="hidden xs:inline">Make Another </span>Donation
+                    <span className="hidden xs:inline">Make Another </span>Contribution
                   </>
                 )}
               </Button>

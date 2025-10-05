@@ -29,15 +29,15 @@ const donationSchema = z.object({
   message: z.string().optional(),
 })
 
-type DonationFormData = z.infer<typeof donationSchema>
+type ContributionFormData = z.infer<typeof donationSchema>
 
-export default function DonationFormPage() {
+export default function ContributionFormPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false)
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<DonationFormData>({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<ContributionFormData>({
     resolver: zodResolver(donationSchema),
     defaultValues: {
       name: '',
@@ -57,7 +57,7 @@ export default function DonationFormPage() {
     })
   }
 
-  const onSubmit = async (data: DonationFormData) => {
+  const onSubmit = async (data: ContributionFormData) => {
     setIsLoading(true)
 
     try {
@@ -91,7 +91,7 @@ export default function DonationFormPage() {
         amount: orderData.amount,
         currency: orderData.currency,
         name: 'Veritas-25',
-        description: 'Donation for Veritas-25 Program',
+        description: 'Contribution for Veritas-25 Program',
         order_id: orderData.id,
         handler: async function (response: any) {
           // Verify payment
@@ -103,14 +103,14 @@ export default function DonationFormPage() {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-                donationData: data,
+                contributionData: data,
               }),
             })
 
             if (verifyResponse.ok) {
               setShowSuccess(true)
               reset()
-              toast.success('Thank you for donating to Veritas 2025. May God bless you.')
+              toast.success('Thank you for contributing to Veritas 2025. May God bless you.')
 
               const receiptPayload = {
                 name: data.name,
@@ -121,7 +121,7 @@ export default function DonationFormPage() {
                 datetime: new Date().toISOString(),
               }
               try {
-                sessionStorage.setItem('donation_receipt', JSON.stringify(receiptPayload))
+                sessionStorage.setItem('contribution_receipt', JSON.stringify(receiptPayload))
               } catch {}
 
               // Show receipt generation loading state
@@ -129,7 +129,7 @@ export default function DonationFormPage() {
               
               // Wait 2.5 seconds before navigating to receipt
               setTimeout(() => {
-                router.push('/donate/receipt')
+                router.push('/contribute/receipt')
               }, 2500)
             } else {
               const errorData = await verifyResponse.json()
@@ -184,7 +184,7 @@ export default function DonationFormPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Make a Donation</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Make a Contribution</h1>
               <p className="text-sm text-gray-500">Support Veritas-25</p>
             </div>
           </div>
@@ -224,9 +224,9 @@ export default function DonationFormPage() {
                 <Heart className="w-6 h-6 text-white" fill="currentColor" />
               </div>
               <div>
-                <CardTitle className="text-2xl">Donation Form</CardTitle>
+                <CardTitle className="text-2xl">Contribution Form</CardTitle>
                 <CardDescription className="text-base">
-                  Fill in your details to proceed with the donation
+                  Fill in your details to proceed with the contribution
                 </CardDescription>
               </div>
             </div>
@@ -261,7 +261,7 @@ export default function DonationFormPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="amount">Donation Amount (₹) *</Label>
+                <Label htmlFor="amount">Contribution Amount (₹) *</Label>
                 <Input
                   id="amount"
                   type="number"
@@ -295,7 +295,7 @@ export default function DonationFormPage() {
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-blue-800">
-                  <strong>Note:</strong> You will be redirected to Razorpay's secure payment gateway to complete your donation.
+                  <strong>Note:</strong> You will be redirected to Razorpay's secure payment gateway to complete your contribution.
                 </p>
               </div>
 

@@ -7,15 +7,15 @@ import { Button } from '@/components/ui/button'
 import { Heart, Users, BookOpen, Sparkles, ArrowRight, DollarSign, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
-export default function DonatePage() {
+export default function ContributePage() {
   const router = useRouter()
   const [isNavigating, setIsNavigating] = useState(false)
 
-  const handleDonateNow = () => {
+  const handleContributeNow = () => {
     setIsNavigating(true)
     // Wait 1.5 seconds before navigating
     setTimeout(() => {
-      router.push('/donate/form')
+      router.push('/contribute/form')
     }, 1500)
   }
   return (
@@ -30,7 +30,7 @@ export default function DonatePage() {
                   <Loader2 className="w-10 h-10 text-white animate-spin" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-bold text-gray-900">Preparing Donation Form...</h3>
+                  <h3 className="text-2xl font-bold text-gray-900">Preparing Contribution Form...</h3>
                   <p className="text-gray-600">Ready to make a difference for Veritas 2025</p>
                 </div>
                 <div className="flex items-center justify-center space-x-1">
@@ -49,13 +49,13 @@ export default function DonatePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Veritas-25 Donation</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Veritas-25 Contribution</h1>
               <p className="text-sm text-gray-500">Support our mission</p>
             </div>
-            <Link href="/donate/form">
+            <Link href="/contribute/form">
               <Button variant="outline">
                 <DollarSign className="w-4 h-4 mr-2" />
-                Donate Now
+                Contribute Now
               </Button>
             </Link>
           </div>
@@ -219,10 +219,10 @@ export default function DonatePage() {
               <CardContent className="p-8">
                 <h2 className="text-3xl font-bold mb-4">Ready to Make a Difference?</h2>
                 <p className="text-rose-50 text-lg mb-6">
-                  Your generous donation will help us continue our mission of enriching young lives through faith
+                  Your generous contribution will help us continue our mission of enriching young lives through faith
                 </p>
                 <Button 
-                  onClick={handleDonateNow}
+                  onClick={handleContributeNow}
                   disabled={isNavigating}
                   size="lg" 
                   className="bg-white text-rose-600 hover:bg-rose-50 text-lg px-8 py-6 h-auto font-semibold shadow-lg hover:shadow-xl transition-all"
@@ -234,7 +234,7 @@ export default function DonatePage() {
                     </>
                   ) : (
                     <>
-                      Donate Now
+                      Contribute Now
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </>
                   )}
@@ -249,7 +249,7 @@ export default function DonatePage() {
           {/* Footer Note */}
           <div className="mt-12 text-center">
             <p className="text-gray-600">
-              Organized by <strong>Jesus Youth Pala</strong> | All donations are used for program activities and student support
+              Organized by <strong>Jesus Youth Pala</strong> | All contributions are used for program activities and student support
             </p>
           </div>
         </div>

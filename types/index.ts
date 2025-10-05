@@ -74,11 +74,11 @@ export interface Project extends ProjectSummary {
   updated_at: string;
 }
 
-export interface DonationData {
+export interface ContributionData {
   name: string
   phone_number: string
   amount: number
-  message?: string
+  description?: string
 }
 
 export interface RazorpayOrder {

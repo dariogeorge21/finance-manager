@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
-      donationData
+      contributionData
     } = await request.json()
 
     // Verify payment signature
@@ -39,24 +39,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Store donation in income table
+    // Store contribution in income table
     const { error: insertError } = await supabaseAdmin
       .from('income')
       .insert({
         project_id: project.id,
-        name: donationData.name,
-        phone_number: donationData.phone_number,
-        amount: donationData.amount,
-        description: donationData.message || 'Donation for Veritas-25',
+        name: contributionData.name,
+        phone_number: contributionData.phone_number,
+        amount: contributionData.amount,
+        description: contributionData.message || 'Contribution for Veritas-25',
         date: new Date().toISOString().split('T')[0],
         called_status: true,
-        called_by: 'DONATION'
+        called_by: 'CONTRIBUTION'
       })
 
     if (insertError) {
-      console.error('Error storing donation:', insertError)
+      console.error('Error storing contribution:', insertError)
       return NextResponse.json(
-        { error: 'Failed to store donation record' },
+        { error: 'Failed to store contribution record' },
         { status: 500 }
       )
     }

@@ -22,9 +22,9 @@ export async function POST(request: NextRequest) {
     const order = await razorpay.orders.create({
       amount: amount * 100, // Convert to paise
       currency: 'INR',
-      receipt: `donation_${Date.now()}`,
+      receipt: `contribution_${Date.now()}`,
       notes: {
-        purpose: 'Veritas-25 Donation',
+        purpose: 'Veritas-25 Contribution',
       },
     })
 
