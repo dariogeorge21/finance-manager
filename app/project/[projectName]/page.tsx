@@ -377,9 +377,9 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                             <TableHead>Phone</TableHead>
                             <TableHead>Amount</TableHead>
                             <TableHead>Date</TableHead>
-                            <TableHead>Called</TableHead>
-                            <TableHead>Called By</TableHead>
-                            <TableHead>Called Notes</TableHead>
+                            <TableHead>Transfer</TableHead>
+                            <TableHead>Collected By</TableHead>
+                            <TableHead>Collected Notes</TableHead>
                             <TableHead>Actions</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -401,9 +401,9 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                               <TableCell>
                                 <Badge variant={item.called_status ? "default" : "secondary"}>
                                   {item.called_status ? (
-                                    <><Phone className="w-3 h-3 mr-1" />Called</>
+                                    <><Phone className="w-3 h-3 mr-1" />Transferred</>
                                   ) : (
-                                    <><PhoneOff className="w-3 h-3 mr-1" />Not Called</>
+                                    <><PhoneOff className="w-3 h-3 mr-1" />Not Tranferred</>
                                   )}
                                 </Badge>
                               </TableCell>

@@ -51,7 +51,7 @@ export default async function HomePage() {
             </div>
 
             {/* Create New Project */}
-            {/* <div className="space-y-6">
+            <div className="space-y-6">
               <Card className="p-6 text-center">
                 <CardHeader>
                   <CardTitle className="text-lg">New Project Workspace</CardTitle>
@@ -63,7 +63,7 @@ export default async function HomePage() {
                   <CreateProjectForm />
                 </CardContent>
               </Card>
-            </div> */}
+            </div>
           </div>
 
           {/* Donation Card */}

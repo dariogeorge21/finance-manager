@@ -244,12 +244,12 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
               />
             </button>
             <Label htmlFor="called_status" className="text-sm font-normal select-none">
-              {calledStatus ? 'Marked as called/contacted' : 'Mark as called/contacted'}
+              {calledStatus ? 'Amount transferred' : 'Not Tranferred'}
             </Label>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="called_by">Called By</Label>
+            <Label htmlFor="called_by">Collected By</Label>
             <Input
               id="called_by"
               placeholder="Enter name of caller"
