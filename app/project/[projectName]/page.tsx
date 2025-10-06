@@ -385,7 +385,10 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                         </TableHeader>
                         <TableBody>
                           {paginatedIncome.map((item) => (
-                            <TableRow key={item.id}>
+                            <TableRow 
+                              key={item.id}
+                              className={item.called_status ? "bg-green-50 hover:bg-green-100" : "bg-red-50 hover:bg-red-100"}
+                            >
                               <TableCell className="font-medium">{item.name}</TableCell>
                               <TableCell>
                                 {item.phone_number ? (
@@ -399,11 +402,14 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                               </TableCell>
                               <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
                               <TableCell>
-                                <Badge variant={item.called_status ? "default" : "secondary"}>
+                                <Badge 
+                                  variant={item.called_status ? "default" : "secondary"}
+                                  className={item.called_status ? "bg-green-100 text-green-800 border-green-300" : "bg-red-100 text-red-800 border-red-300"}
+                                >
                                   {item.called_status ? (
                                     <><Phone className="w-3 h-3 mr-1" />Transferred</>
                                   ) : (
-                                    <><PhoneOff className="w-3 h-3 mr-1" />Not Tranferred</>
+                                    <><PhoneOff className="w-3 h-3 mr-1" />Not Transferred</>
                                   )}
                                 </Badge>
                               </TableCell>
@@ -455,7 +461,10 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                     {/* Mobile Cards */}
                     <div className="md:hidden space-y-4">
                       {paginatedIncome.map((item) => (
-                        <Card key={item.id} className="p-4">
+                        <Card 
+                          key={item.id} 
+                          className={`p-4 ${item.called_status ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}
+                        >
                           <div className="space-y-3">
                             <div className="flex justify-between items-start">
                               <div>
@@ -475,16 +484,19 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                             </div>
                             
                             <div className="flex flex-wrap gap-2">
-                              <Badge variant={item.called_status ? "default" : "secondary"}>
+                              <Badge 
+                                variant={item.called_status ? "default" : "secondary"}
+                                className={item.called_status ? "bg-green-100 text-green-800 border-green-300" : "bg-red-100 text-red-800 border-red-300"}
+                              >
                                 {item.called_status ? (
-                                  <><Phone className="w-3 h-3 mr-1" />Called</>
+                                  <><Phone className="w-3 h-3 mr-1" />Transferred</>
                                 ) : (
-                                  <><PhoneOff className="w-3 h-3 mr-1" />Not Called</>
+                                  <><PhoneOff className="w-3 h-3 mr-1" />Not Transferred</>
                                 )}
                               </Badge>
                               {item.called_by && (
                                 <Badge variant="outline">
-                                  By: {item.called_by}
+                                  Collected by: {item.called_by}
                                 </Badge>
                               )}
                             </div>
