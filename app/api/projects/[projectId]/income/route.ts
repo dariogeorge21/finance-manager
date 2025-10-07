@@ -7,30 +7,19 @@ export async function GET(
 ) {
   try {
     const { projectId } = await params
-    const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
-    const offset = (page - 1) * limit
 
-    const { data: income, error, count } = await supabase
+    const { data: income, error } = await supabase
       .from('income')
-      .select('*', { count: 'exact' })
+      .select('*')
       .eq('project_id', projectId)
       .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1)
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({
-      income: income || [],
-      pagination: {
-        page,
-        limit,
-        total: count || 0,
-        totalPages: Math.ceil((count || 0) / limit),
-      }
+      income: income || []
     })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

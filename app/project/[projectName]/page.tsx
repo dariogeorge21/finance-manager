@@ -55,10 +55,10 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
   const [editingIncome, setEditingIncome] = useState<Income | null>(null)
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
   
-  // Pagination states
+  // Pagination states - set to show all items by default
   const [incomePage, setIncomePage] = useState(1)
   const [expensePage, setExpensePage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [itemsPerPage, setItemsPerPage] = useState(1000) // Show all items by default
   
   // Search and filter states
   const [incomeSearchQuery, setIncomeSearchQuery] = useState('')
@@ -397,10 +397,10 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="5">5</SelectItem>
                           <SelectItem value="10">10</SelectItem>
                           <SelectItem value="20">20</SelectItem>
                           <SelectItem value="50">50</SelectItem>
+                          <SelectItem value="1000">All</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -686,10 +686,10 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="5">5</SelectItem>
                           <SelectItem value="10">10</SelectItem>
                           <SelectItem value="20">20</SelectItem>
                           <SelectItem value="50">50</SelectItem>
+                          <SelectItem value="1000">All</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
