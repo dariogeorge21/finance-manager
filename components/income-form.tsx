@@ -171,6 +171,7 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
             <Label htmlFor="phone_number">Phone Number *</Label>
             <Input
               id="phone_number"
+              type="number"
               placeholder="Enter Phone Number"
               {...register('phone_number')}
             />
@@ -223,10 +224,10 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="description">Call Notes</Label>
+            <Label htmlFor="description">Notes</Label>
             <Textarea
               id="description"
-              placeholder="Enter Call Notes"
+              placeholder="Notes:"
               rows={3}
               {...register('description')}
             />
