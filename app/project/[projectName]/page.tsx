@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { IncomeForm } from '@/components/income-form'
 import { ExpenseForm } from '@/components/expense-form'
@@ -31,7 +32,9 @@ import {
   PhoneOff,
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Search,
+  X
 } from 'lucide-react'
 
 interface ProjectAuth {
@@ -56,6 +59,10 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
   const [incomePage, setIncomePage] = useState(1)
   const [expensePage, setExpensePage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
+  
+  // Search and filter states
+  const [incomeSearchQuery, setIncomeSearchQuery] = useState('')
+  const [incomeCalledFilter, setIncomeCalledFilter] = useState<'all' | 'called' | 'not-called'>('all')
   
   // Confirmation dialog states
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
@@ -123,6 +130,33 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
     router.push('/')
   }
 
+  // Filter and search helpers
+  const getFilteredIncome = () => {
+    let filtered = income
+
+    // Apply search filter
+    if (incomeSearchQuery.trim()) {
+      const searchLower = incomeSearchQuery.toLowerCase()
+      filtered = filtered.filter((item) => {
+        const nameMatch = item.name.toLowerCase().includes(searchLower)
+        const phoneMatch = item.phone_number?.toLowerCase().includes(searchLower) || false
+        const calledByMatch = item.called_by?.toLowerCase().includes(searchLower) || false
+        return nameMatch || phoneMatch || calledByMatch
+      })
+    }
+
+    // Apply called status filter
+    if (incomeCalledFilter !== 'all') {
+      filtered = filtered.filter((item) => {
+        if (incomeCalledFilter === 'called') return item.called_status === true
+        if (incomeCalledFilter === 'not-called') return item.called_status === false
+        return true
+      })
+    }
+
+    return filtered
+  }
+
   // Pagination helpers
   const getPaginatedData = (data: any[], page: number) => {
     const startIndex = (page - 1) * itemsPerPage
@@ -134,10 +168,18 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
     return Math.ceil(dataLength / itemsPerPage)
   }
 
-  const paginatedIncome = getPaginatedData(income, incomePage)
+  const filteredIncome = getFilteredIncome()
+  const paginatedIncome = getPaginatedData(filteredIncome, incomePage)
   const paginatedExpenses = getPaginatedData(expenses, expensePage)
-  const totalIncomePages = getTotalPages(income.length)
+  const totalIncomePages = getTotalPages(filteredIncome.length)
   const totalExpensePages = getTotalPages(expenses.length)
+
+  // Clear search and filters
+  const clearIncomeFilters = () => {
+    setIncomeSearchQuery('')
+    setIncomeCalledFilter('all')
+    setIncomePage(1)
+  }
 
   const confirmDelete = (id: string, type: 'income' | 'expense', name: string) => {
     setDeleteItem({ id, type, name })
@@ -341,7 +383,7 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                   <div>
                     <CardTitle>Income Entries</CardTitle>
                     <CardDescription>
-                      {income.length > 0 ? `Showing ${((incomePage - 1) * itemsPerPage) + 1}-${Math.min(incomePage * itemsPerPage, income.length)} of ${income.length} entries` : 'No entries'}
+                      {income.length > 0 ? `Showing ${((incomePage - 1) * itemsPerPage) + 1}-${Math.min(incomePage * itemsPerPage, filteredIncome.length)} of ${filteredIncome.length} entries${filteredIncome.length !== income.length ? ` (filtered from ${income.length} total)` : ''}` : 'No entries'}
                     </CardDescription>
                   </div>
                   {income.length > 0 && (
@@ -364,6 +406,56 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                     </div>
                   )}
                 </div>
+
+                {/* Search and Filter Controls */}
+                {income.length > 0 && (
+                  <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                    <div className="relative flex-1 max-w-sm">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <Input
+                        placeholder="Search by name, phone, or collector..."
+                        value={incomeSearchQuery}
+                        onChange={(e) => {
+                          setIncomeSearchQuery(e.target.value)
+                          setIncomePage(1)
+                        }}
+                        className="pl-10 pr-10"
+                      />
+                      {incomeSearchQuery && (
+                        <button
+                          onClick={() => {
+                            setIncomeSearchQuery('')
+                            setIncomePage(1)
+                          }}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                    
+                    <Select value={incomeCalledFilter} onValueChange={(value: 'all' | 'called' | 'not-called') => {
+                      setIncomeCalledFilter(value)
+                      setIncomePage(1)
+                    }}>
+                      <SelectTrigger className="w-48">
+                        <SelectValue placeholder="Filter by status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Entries</SelectItem>
+                        <SelectItem value="called">Transferred</SelectItem>
+                        <SelectItem value="not-called">Not Transferred</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    {(incomeSearchQuery || incomeCalledFilter !== 'all') && (
+                      <Button variant="outline" onClick={clearIncomeFilters} size="sm">
+                        <X className="w-4 h-4 mr-1" />
+                        Clear Filters
+                      </Button>
+                    )}
+                  </div>
+                )}
               </CardHeader>
               <CardContent>
                 {income.length > 0 ? (
