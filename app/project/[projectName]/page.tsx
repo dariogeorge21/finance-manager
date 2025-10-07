@@ -28,8 +28,6 @@ import {
   Download,
   Edit,
   Trash2,
-  Phone,
-  PhoneOff,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -67,6 +65,9 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
   // Confirmation dialog states
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [deleteItem, setDeleteItem] = useState<{ id: string; type: 'income' | 'expense'; name: string } | null>(null)
+
+  // Toggle status update state
+  const [updatingCalledStatus, setUpdatingCalledStatus] = useState<string | null>(null)
 
   useEffect(() => {
     const initializeProject = async () => {
@@ -216,6 +217,39 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
 
   const handleDeleteExpense = (id: string, description: string) => {
     confirmDelete(id, 'expense', description)
+  }
+
+  const handleToggleCalledStatus = async (incomeId: string, currentStatus: boolean) => {
+    if (!projectAuth) return
+
+    setUpdatingCalledStatus(incomeId)
+
+    try {
+      const response = await fetch(`/api/projects/${projectAuth.project_id}/income/${incomeId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ called_status: !currentStatus }),
+      })
+
+      if (response.ok) {
+        // Update the local state
+        setIncome(prevIncome =>
+          prevIncome.map(item =>
+            item.id === incomeId
+              ? { ...item, called_status: !currentStatus }
+              : item
+          )
+        )
+        toast.success(`Transfer status updated to ${!currentStatus ? 'Transferred' : 'Not Transferred'}`)
+      } else {
+        const result = await response.json()
+        toast.error(result.error || 'Failed to update transfer status')
+      }
+    } catch (error) {
+      toast.error('Network error. Please try again.')
+    } finally {
+      setUpdatingCalledStatus(null)
+    }
   }
 
   const handleExportIncome = async () => {
@@ -494,16 +528,31 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                               </TableCell>
                               <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
                               <TableCell>
-                                <Badge 
-                                  variant={item.called_status ? "default" : "secondary"}
-                                  className={item.called_status ? "bg-green-100 text-green-800 border-green-300" : "bg-red-100 text-red-800 border-red-300"}
-                                >
-                                  {item.called_status ? (
-                                    <><Phone className="w-3 h-3 mr-1" />Transferred</>
-                                  ) : (
-                                    <><PhoneOff className="w-3 h-3 mr-1" />Not Transferred</>
-                                  )}
-                                </Badge>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    disabled={updatingCalledStatus === item.id}
+                                    onClick={() => handleToggleCalledStatus(item.id, item.called_status)}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50 ${
+                                      item.called_status ? 'bg-emerald-600' : 'bg-gray-200'
+                                    }`}
+                                  >
+                                    <span
+                                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
+                                        item.called_status ? 'translate-x-6' : 'translate-x-1'
+                                      }`}
+                                    />
+                                  </button>
+                                  <span className={`text-sm font-medium ${item.called_status ? 'text-emerald-700' : 'text-gray-500'}`}>
+                                    {updatingCalledStatus === item.id ? (
+                                      'Updating...'
+                                    ) : item.called_status ? (
+                                      'Transferred'
+                                    ) : (
+                                      'Not Transferred'
+                                    )}
+                                  </span>
+                                </div>
                               </TableCell>
                               <TableCell>
                                 {item.called_by ? (
@@ -575,17 +624,32 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                               </div>
                             </div>
                             
-                            <div className="flex flex-wrap gap-2">
-                              <Badge 
-                                variant={item.called_status ? "default" : "secondary"}
-                                className={item.called_status ? "bg-green-100 text-green-800 border-green-300" : "bg-red-100 text-red-800 border-red-300"}
-                              >
-                                {item.called_status ? (
-                                  <><Phone className="w-3 h-3 mr-1" />Transferred</>
-                                ) : (
-                                  <><PhoneOff className="w-3 h-3 mr-1" />Not Transferred</>
-                                )}
-                              </Badge>
+                            <div className="flex flex-wrap gap-2 items-center">
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  disabled={updatingCalledStatus === item.id}
+                                  onClick={() => handleToggleCalledStatus(item.id, item.called_status)}
+                                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50 ${
+                                    item.called_status ? 'bg-emerald-600' : 'bg-gray-200'
+                                  }`}
+                                >
+                                  <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
+                                      item.called_status ? 'translate-x-6' : 'translate-x-1'
+                                    }`}
+                                  />
+                                </button>
+                                <span className={`text-sm font-medium ${item.called_status ? 'text-emerald-700' : 'text-gray-500'}`}>
+                                  {updatingCalledStatus === item.id ? (
+                                    'Updating...'
+                                  ) : item.called_status ? (
+                                    'Transferred'
+                                  ) : (
+                                    'Not Transferred'
+                                  )}
+                                </span>
+                              </div>
                               {item.called_by && (
                                 <Badge variant="outline">
                                   Collected by: {item.called_by}
