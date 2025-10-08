@@ -159,7 +159,7 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
             <Label htmlFor="name">Name *</Label>
             <Input
               id="name"
-              placeholder="Enter Name"
+              placeholder="Enter name"
               {...register('name')}
             />
             {errors.name && (
@@ -168,11 +168,11 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="phone_number">Phone Number *</Label>
+            <Label htmlFor="phone_number">Phone number *</Label>
             <Input
               id="phone_number"
               type="number"
-              placeholder="Enter Phone Number"
+              placeholder="Enter phone number"
               {...register('phone_number')}
             />
             {errors.phone_number && (
@@ -224,10 +224,10 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="description">Notes</Label>
+            <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
-              placeholder="Notes:"
+              placeholder="Enter description"
               rows={3}
               {...register('description')}
             />
@@ -238,22 +238,22 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
               type="button"
               aria-pressed={calledStatus}
               onClick={() => setValue('called_status', !calledStatus)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${calledStatus ? 'bg-emerald-600' : 'bg-gray-200'}`}
+              className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors duration-200 ${calledStatus ? 'bg-emerald-600' : 'bg-gray-200'}`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${calledStatus ? 'translate-x-5' : 'translate-x-1'}`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${calledStatus ? 'translate-x-6' : 'translate-x-1'}`}
               />
             </button>
             <Label htmlFor="called_status" className="text-sm font-normal select-none">
-              {calledStatus ? 'Amount transferred' : 'Not Tranferred'}
+              {calledStatus ? 'Transferred' : 'Not Transferred'}
             </Label>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="called_by">Collected By</Label>
+            <Label htmlFor="called_by">Collector</Label>
             <Input
               id="called_by"
-              placeholder="Enter name of caller"
+              placeholder="Enter name of collector"
               {...register('called_by')}
             />
             {errors.called_by && (
