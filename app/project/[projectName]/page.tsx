@@ -32,7 +32,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Search,
-  X
+  X,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 
 interface ProjectAuth {
@@ -68,6 +70,9 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
 
   // Toggle status update state
   const [updatingCalledStatus, setUpdatingCalledStatus] = useState<string | null>(null)
+
+  // Privacy toggle state
+  const [showAmounts, setShowAmounts] = useState(false)
 
   useEffect(() => {
     const initializeProject = async () => {
@@ -129,6 +134,11 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
   const handleLogout = () => {
     sessionStorage.removeItem('project_auth')
     router.push('/')
+  }
+
+  // Helper function to conditionally display amounts
+  const displayAmount = (amount: number) => {
+    return showAmounts ? formatCurrency(amount) : '₹•••••'
   }
 
   // Filter and search helpers
@@ -308,10 +318,25 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
               <h1 className="text-2xl font-bold text-gray-900">{projectAuth.project_name}</h1>
               <p className="text-sm text-gray-500">Finance Dashboard</p>
             </div>
-            <Button variant="outline" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Exit Project
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAmounts(!showAmounts)}
+                className="transition-all duration-200"
+                title={showAmounts ? "Hide amounts" : "Show amounts"}
+              >
+                {showAmounts ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </Button>
+              <Button variant="outline" onClick={handleLogout}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Exit Project
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -325,7 +350,7 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-emerald-100 text-sm font-medium">Total Income</p>
-                    <p className="text-2xl font-bold">{formatCurrency(stats.totalIncome)}</p>
+                    <p className="text-2xl font-bold transition-all duration-200">{displayAmount(stats.totalIncome)}</p>
                   </div>
                   <ArrowUpCircle className="w-8 h-8 text-emerald-100" />
                 </div>
@@ -338,7 +363,7 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-red-100 text-sm font-medium">Total Expenses</p>
-                    <p className="text-2xl font-bold">{formatCurrency(stats.totalExpenses)}</p>
+                    <p className="text-2xl font-bold transition-all duration-200">{displayAmount(stats.totalExpenses)}</p>
                   </div>
                   <ArrowDownCircle className="w-8 h-8 text-red-100" />
                 </div>
@@ -351,7 +376,7 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-white text-opacity-90 text-sm font-medium">Net Balance</p>
-                    <p className="text-2xl font-bold">{formatCurrency(stats.netBalance)}</p>
+                    <p className="text-2xl font-bold transition-all duration-200">{displayAmount(stats.netBalance)}</p>
                   </div>
                   <TrendingUp className="w-8 h-8 text-white text-opacity-75" />
                 </div>
@@ -399,7 +424,7 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
         {/* Charts */}
         {stats && (
           <div className="mb-8">
-            <FinancialCharts stats={stats} />
+            <FinancialCharts stats={stats} showAmounts={showAmounts} />
           </div>
         )}
 
@@ -523,8 +548,8 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                                   <span className="text-gray-400 text-sm">-</span>
                                 )}
                               </TableCell>
-                              <TableCell className="font-semibold text-emerald-600">
-                                {formatCurrency(item.amount)}
+                              <TableCell className="font-semibold text-emerald-600 transition-all duration-200">
+                                {displayAmount(item.amount)}
                               </TableCell>
                               <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
                               <TableCell>
@@ -615,8 +640,8 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                                 </p>
                               </div>
                               <div className="text-right">
-                                <p className="font-semibold text-emerald-600 text-lg">
-                                  {formatCurrency(item.amount)}
+                                <p className="font-semibold text-emerald-600 text-lg transition-all duration-200">
+                                  {displayAmount(item.amount)}
                                 </p>
                                 <p className="text-sm text-gray-500">
                                   {new Date(item.date).toLocaleDateString()}
@@ -782,8 +807,8 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                               <TableCell>
                                 <Badge variant="outline">{item.category}</Badge>
                               </TableCell>
-                              <TableCell className="font-semibold text-red-600">
-                                {formatCurrency(item.amount)}
+                              <TableCell className="font-semibold text-red-600 transition-all duration-200">
+                                {displayAmount(item.amount)}
                               </TableCell>
                               <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
                               <TableCell>
@@ -824,8 +849,8 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                                 <Badge variant="outline" className="mt-1">{item.category}</Badge>
                               </div>
                               <div className="text-right ml-4">
-                                <p className="font-semibold text-red-600 text-lg">
-                                  {formatCurrency(item.amount)}
+                                <p className="font-semibold text-red-600 text-lg transition-all duration-200">
+                                  {displayAmount(item.amount)}
                                 </p>
                                 <p className="text-sm text-gray-500">
                                   {new Date(item.date).toLocaleDateString()}

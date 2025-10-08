@@ -7,11 +7,17 @@ import { ProjectStats } from '@/types'
 
 interface FinancialChartsProps {
   stats: ProjectStats
+  showAmounts: boolean
 }
 
 const COLORS = ['#10B981', '#EF4444', '#3B82F6', '#F59E0B']
 
-export function FinancialCharts({ stats }: FinancialChartsProps) {
+export function FinancialCharts({ stats, showAmounts }: FinancialChartsProps) {
+  // Helper function to conditionally display amounts
+  const displayAmount = (amount: number) => {
+    return showAmounts ? formatCurrency(amount) : '₹•••••'
+  }
+
   const pieData = [
     { name: 'Income', value: stats.totalIncome, color: '#10B981' },
     { name: 'Expenses', value: stats.totalExpenses, color: '#EF4444' },
@@ -64,7 +70,7 @@ export function FinancialCharts({ stats }: FinancialChartsProps) {
           <CardTitle className="text-lg font-semibold">Income vs Expenses</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-64">
+          <div className="h-64 transition-all duration-200">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -74,13 +80,13 @@ export function FinancialCharts({ stats }: FinancialChartsProps) {
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
-                  label={({ name, value }) => `${name}: ${formatCurrency(value as number)}`}
+                  label={({ name, value }) => showAmounts ? `${name}: ${formatCurrency(value as number)}` : name}
                 >
                   {pieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                <Tooltip formatter={(value) => displayAmount(value as number)} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -92,13 +98,13 @@ export function FinancialCharts({ stats }: FinancialChartsProps) {
           <CardTitle className="text-lg font-semibold">Financial Summary</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-64">
+          <div className="h-64 transition-all duration-200">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={barData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
-                <YAxis tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}K`} />
-                <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                <YAxis tickFormatter={(value) => showAmounts ? `₹${(value / 1000).toFixed(0)}K` : '₹•••'} />
+                <Tooltip formatter={(value) => displayAmount(value as number)} />
                 <Legend />
                 <Bar dataKey="Income" fill="#10B981" name="Income" />
                 <Bar dataKey="Expenses" fill="#EF4444" name="Expenses" />
