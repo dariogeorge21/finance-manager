@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Skeleton } from './ui/skeleton'
+import { LoadingSpinner } from './ui/loading-progress'
 import { toast } from 'sonner'
 import { Income } from '@/types'
 
@@ -268,7 +268,7 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
             <Button type="submit" disabled={isLoading} className="flex-1 bg-emerald-600 hover:bg-emerald-700">
               {isLoading ? (
                 <>
-                  <Skeleton className="mr-2" />
+                  <LoadingSpinner size="sm" theme="white" className="mr-2" />
                   {editData ? 'Updating...' : 'Adding...'}
                 </>
               ) : (

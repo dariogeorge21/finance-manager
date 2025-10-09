@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Skeleton } from './ui/skeleton'
+import { LoadingSpinner } from './ui/loading-progress'
 import { toast } from 'sonner'
 import { Plus } from 'lucide-react'
 
@@ -119,7 +119,7 @@ export function CreateProjectForm() {
             <Button type="submit" disabled={isLoading} className="flex-1 bg-emerald-600 hover:bg-emerald-700">
               {isLoading ? (
                 <>
-                  <Skeleton className="h-4 w-4 mr-2" />
+                  <LoadingSpinner size="sm" theme="white" className="mr-2" />
                   Creating...
                 </>
               ) : (

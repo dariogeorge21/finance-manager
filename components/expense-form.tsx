@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Skeleton } from './ui/skeleton'
+import { LoadingSpinner } from './ui/loading-progress'
 import { toast } from 'sonner'
 import { Expense } from '@/types'
 
@@ -172,7 +172,7 @@ export function ExpenseForm({ isOpen, onClose, onSuccess, projectId, editData }:
             <Button type="submit" disabled={isLoading} className="flex-1 bg-blue-600 hover:bg-blue-700">
               {isLoading ? (
                 <>
-                  <Skeleton className="mr-2" />
+                  <LoadingSpinner size="sm" theme="white" className="mr-2" />
                   {editData ? 'Updating...' : 'Adding...'}
                 </>
               ) : (

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Skeleton } from '@/components/ui/skeleton'
+import { LoadingProgress } from '@/components/ui/loading-progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
@@ -301,7 +301,14 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
   if (!projectAuth || isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Skeleton/>
+        <LoadingProgress
+          variant="centered"
+          size="lg"
+          message="Loading project dashboard..."
+          animated={true}
+          showPercentage={true}
+          className="max-w-lg"
+        />
       </div>
     )
   }

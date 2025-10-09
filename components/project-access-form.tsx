@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Skeleton } from './ui/skeleton'
+import { LoadingSpinner } from './ui/loading-progress'
 import { toast } from 'sonner'
 import { ProjectSummary } from '@/types'
 
@@ -151,7 +151,7 @@ export function ProjectAccessForm({ projects }: ProjectAccessFormProps) {
           <Button type="submit" className="w-full bg-white text-black hover:text-white hover:bg-black" disabled={isLoading}>
             {isLoading ? (
               <>
-                <Skeleton className="w-4 h-4 mr-2" />
+                <LoadingSpinner size="sm" theme="default" className="mr-2" />
                 Authenticating...
               </>
             ) : (
