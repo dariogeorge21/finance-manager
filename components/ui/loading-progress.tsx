@@ -90,20 +90,20 @@ const LoadingProgress = React.forwardRef<
   // Variant-specific wrapper classes
   const variantClasses = {
     inline: "w-full",
-    centered: "w-full max-w-md mx-auto",
-    "fixed-top": "fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm p-4",
-    overlay: "fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    centered: "w-full max-w-md mx-auto px-2 sm:px-0",
+    "fixed-top": "fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm p-2 sm:p-4",
+    overlay: "fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-2 sm:px-0"
   }
 
   const progressBar = (
     <div className={cn("space-y-2", variantClasses[variant], className)} ref={ref} {...props}>
       {(message || showPercentage) && (
-        <div className="flex justify-between items-center text-sm">
+        <div className="flex flex-col sm:flex-row justify-between items-center text-sm gap-1 sm:gap-0">
           {message && (
-            <span className="text-muted-foreground font-medium">{message}</span>
+            <span className="text-muted-foreground font-medium text-center sm:text-left w-full sm:w-auto">{message}</span>
           )}
           {showPercentage && (
-            <span className="text-muted-foreground font-mono">
+            <span className="text-muted-foreground font-mono text-center sm:text-right w-full sm:w-auto">
               {Math.round(progressValue)}%
             </span>
           )}
@@ -124,7 +124,7 @@ const LoadingProgress = React.forwardRef<
   if (variant === "overlay") {
     return (
       <div className={variantClasses[variant]}>
-        <div className="bg-background rounded-lg p-6 shadow-lg max-w-md mx-4 w-full">
+        <div className="bg-background rounded-lg p-4 sm:p-6 shadow-lg max-w-md w-full mx-2 sm:mx-4">
           {progressBar}
         </div>
       </div>
