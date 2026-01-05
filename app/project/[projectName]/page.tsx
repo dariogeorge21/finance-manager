@@ -14,6 +14,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { IncomeForm } from '@/components/income-form'
 import { ExpenseForm } from '@/components/expense-form'
 import { FinancialCharts } from '@/components/financial-charts'
+import { CallBoothPopup } from '@/components/call-booth-popup'
+import { CallBoothManagementModal } from '@/components/call-booth-management-modal'
 import { Toaster } from '@/components/ui/sonner'
 import { toast } from 'sonner'
 import { formatCurrency } from '@/lib/currency'
@@ -34,7 +36,8 @@ import {
   Search,
   X,
   Eye,
-  EyeOff
+  EyeOff,
+  Phone
 } from 'lucide-react'
 
 interface ProjectAuth {
@@ -73,6 +76,9 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
 
   // Privacy toggle state
   const [showAmounts, setShowAmounts] = useState(false)
+
+  // Call Booth modal state
+  const [showCallBoothModal, setShowCallBoothModal] = useState(false)
 
   useEffect(() => {
     const initializeProject = async () => {
@@ -326,6 +332,16 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
               <p className="text-sm text-gray-500">Finance Dashboard</p>
             </div>
             <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowCallBoothModal(true)}
+                className="transition-all duration-200"
+                title="Manage Call Booth"
+              >
+                <Phone className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Call Booth</span>
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -973,7 +989,7 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
             }}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleDeleteConfirmed}
               className="bg-red-600 hover:bg-red-700"
             >
@@ -982,6 +998,16 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Call Booth Management Modal */}
+      <CallBoothManagementModal
+        isOpen={showCallBoothModal}
+        onClose={() => setShowCallBoothModal(false)}
+        projectId={projectAuth.project_id}
+      />
+
+      {/* Call Booth Popup */}
+      <CallBoothPopup projectId={projectAuth.project_id} />
     </div>
   )
 }
