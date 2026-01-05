@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import { ChevronUp, ChevronDown, Phone, MessageCircle } from 'lucide-react'
+import { ChevronDown, Phone, MessageCircle } from 'lucide-react'
 import { CallBooth } from '@/types'
 import { toast } from 'sonner'
 
@@ -99,7 +99,7 @@ export function CallBoothPopup({ projectId }: CallBoothPopupProps) {
           className="rounded-full w-14 h-14 shadow-lg bg-blue-600 hover:bg-blue-700"
           size="icon"
         >
-          <ChevronUp className="w-6 h-6" />
+          <Phone className="w-6 h-6" />
         </Button>
       )}
 
