@@ -81,6 +81,28 @@ export interface ContributionData {
   description?: string
 }
 
+export interface CallBooth {
+  id: string
+  project_id: string
+  name: string
+  phone_number: string
+  contacted: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateCallBoothData {
+  name: string
+  phone_number: string
+  contacted?: boolean
+}
+
+export interface UpdateCallBoothData {
+  name?: string
+  phone_number?: string
+  contacted?: boolean
+}
+
 export interface RazorpayOrder {
   id: string
   entity: string
