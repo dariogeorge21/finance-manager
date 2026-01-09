@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import { ChevronDown, Phone, MessageCircle } from 'lucide-react'
+import { ChevronDown, Phone, MessageCircle, CheckCircle2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { CallBooth } from '@/types'
 import { toast } from 'sonner'
 
@@ -29,10 +30,9 @@ export function CallBoothPopup({ projectId }: CallBoothPopupProps) {
       const data = await response.json()
       
       if (response.ok) {
-        // Filter to show only not contacted entries
-        const notContacted = data.callBooth.filter((c: CallBooth) => !c.contacted)
-        setContacts(notContacted)
-        if (notContacted.length > 0) {
+        // Display ALL contacts (both contacted and not contacted)
+        setContacts(data.callBooth)
+        if (data.callBooth.length > 0) {
           setCurrentIndex(0)
         }
       }
@@ -118,13 +118,21 @@ export function CallBoothPopup({ projectId }: CallBoothPopupProps) {
                 <ChevronDown className="w-4 h-4" />
               </Button>
             </div>
-            <p className="text-sm text-gray-500">
-              {currentIndex + 1} of {contacts.length} contacts
-            </p>
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-sm text-gray-500">
+                {currentIndex + 1} of {contacts.length} total contacts
+              </p>
+              {currentContact.contacted && (
+                <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Called
+                </Badge>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Contact Info */}
-            <div className="space-y-2">
+            <div className={`space-y-2 p-3 rounded-lg ${currentContact.contacted ? 'bg-green-50 border border-green-200' : 'bg-amber-50 border border-amber-200'}`}>
               <div>
                 <Label className="text-xs text-gray-500">Name</Label>
                 <p className="font-medium">{currentContact.name}</p>
