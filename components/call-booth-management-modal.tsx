@@ -36,6 +36,7 @@ export function CallBoothManagementModal({ isOpen, onClose, projectId }: CallBoo
     name: '',
     phone_number: '',
     contacted: false,
+    answered: false,
   })
 
   useEffect(() => {
@@ -128,6 +129,7 @@ export function CallBoothManagementModal({ isOpen, onClose, projectId }: CallBoo
       name: contact.name,
       phone_number: contact.phone_number,
       contacted: contact.contacted,
+      answered: contact.answered,
     })
     setShowForm(true)
   }
@@ -157,7 +159,7 @@ export function CallBoothManagementModal({ isOpen, onClose, projectId }: CallBoo
   }
 
   const resetForm = () => {
-    setFormData({ name: '', phone_number: '', contacted: false })
+    setFormData({ name: '', phone_number: '', contacted: false, answered: false })
     setEditingContact(null)
     setShowForm(false)
   }
@@ -233,6 +235,19 @@ export function CallBoothManagementModal({ isOpen, onClose, projectId }: CallBoo
                     </Label>
                   </div>
 
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="answered"
+                      checked={formData.answered}
+                      onChange={(e) => setFormData({ ...formData, answered: e.target.checked })}
+                      className="rounded"
+                    />
+                    <Label htmlFor="answered" className="cursor-pointer">
+                      Mark as answered
+                    </Label>
+                  </div>
+
                   <div className="flex space-x-2">
                     <Button type="submit" disabled={isLoading}>
                       {isLoading ? 'Saving...' : editingContact ? 'Update Contact' : 'Add Contact'}
@@ -302,7 +317,8 @@ export function CallBoothManagementModal({ isOpen, onClose, projectId }: CallBoo
                         <TableRow>
                           <TableHead>Name</TableHead>
                           <TableHead>Phone Number</TableHead>
-                          <TableHead>Status</TableHead>
+                          <TableHead>Contacted</TableHead>
+                          <TableHead>Answered</TableHead>
                           <TableHead>Created</TableHead>
                           <TableHead>Actions</TableHead>
                         </TableRow>
@@ -315,6 +331,11 @@ export function CallBoothManagementModal({ isOpen, onClose, projectId }: CallBoo
                             <TableCell>
                               <Badge variant={contact.contacted ? 'default' : 'secondary'}>
                                 {contact.contacted ? 'Contacted' : 'Not Contacted'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={contact.answered ? 'default' : 'secondary'} className={contact.answered ? 'bg-blue-600' : ''}>
+                                {contact.answered ? 'Answered' : 'Not Answered'}
                               </Badge>
                             </TableCell>
                             <TableCell>{new Date(contact.created_at).toLocaleDateString()}</TableCell>
@@ -371,9 +392,14 @@ export function CallBoothManagementModal({ isOpen, onClose, projectId }: CallBoo
                               <h3 className="font-medium text-lg">{contact.name}</h3>
                               <p className="text-sm text-gray-500">{contact.phone_number}</p>
                             </div>
-                            <Badge variant={contact.contacted ? 'default' : 'secondary'}>
-                              {contact.contacted ? 'Contacted' : 'Not Contacted'}
-                            </Badge>
+                            <div className="flex flex-col gap-1">
+                              <Badge variant={contact.contacted ? 'default' : 'secondary'}>
+                                {contact.contacted ? 'Contacted' : 'Not Contacted'}
+                              </Badge>
+                              <Badge variant={contact.answered ? 'default' : 'secondary'} className={contact.answered ? 'bg-blue-600' : ''}>
+                                {contact.answered ? 'Answered' : 'Not Answered'}
+                              </Badge>
+                            </div>
                           </div>
                           <p className="text-xs text-gray-500">
                             Added: {new Date(contact.created_at).toLocaleDateString()}

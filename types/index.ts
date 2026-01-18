@@ -87,6 +87,7 @@ export interface CallBooth {
   name: string
   phone_number: string
   contacted: boolean
+  answered: boolean
   created_at: string
   updated_at: string
 }
@@ -95,6 +96,7 @@ export interface CreateCallBoothData {
   name: string
   phone_number: string
   contacted?: boolean
+  answered?: boolean
 }
 
 export interface UpdateCallBoothData {

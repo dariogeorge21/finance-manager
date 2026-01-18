@@ -63,6 +63,28 @@ export function CallBoothPopup({ projectId }: CallBoothPopupProps) {
     }
   }
 
+  const handleToggleAnswered = async (contact: CallBooth) => {
+    setIsUpdating(true)
+    try {
+      const response = await fetch(`/api/projects/${projectId}/call-booth/${contact.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answered: !contact.answered }),
+      })
+
+      if (response.ok) {
+        toast.success(`Contact marked as ${!contact.answered ? 'answered' : 'not answered'}`)
+        fetchContacts() // Refresh the list
+      } else {
+        toast.error('Failed to update answered status')
+      }
+    } catch (error) {
+      toast.error('Network error')
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
   const handleWhatsApp = (phoneNumber: string, name: string) => {
     const message = encodeURIComponent(`Hello ${name}, I'm reaching out regarding financial assistance.`)
     window.open(`https://wa.me/${phoneNumber.replace(/\D/g, '')}?text=${message}`, '_blank')
@@ -122,12 +144,20 @@ export function CallBoothPopup({ projectId }: CallBoothPopupProps) {
               <p className="text-sm text-gray-500">
                 {currentIndex + 1} of {contacts.length} total contacts
               </p>
-              {currentContact.contacted && (
-                <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
-                  Called
-                </Badge>
-              )}
+              <div className="flex items-center gap-2">
+                {currentContact.contacted && (
+                  <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    Called
+                  </Badge>
+                )}
+                {currentContact.answered && (
+                  <Badge className="bg-blue-100 text-blue-800 flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    Answered
+                  </Badge>
+                )}
+              </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -152,6 +182,19 @@ export function CallBoothPopup({ projectId }: CallBoothPopupProps) {
                 id="contacted-toggle"
                 checked={currentContact.contacted}
                 onCheckedChange={() => handleToggleContacted(currentContact)}
+                disabled={isUpdating}
+              />
+            </div>
+
+            {/* Answered Status Toggle */}
+            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+              <Label htmlFor="answered-toggle" className="cursor-pointer">
+                Answered Status
+              </Label>
+              <Switch
+                id="answered-toggle"
+                checked={currentContact.answered}
+                onCheckedChange={() => handleToggleAnswered(currentContact)}
                 disabled={isUpdating}
               />
             </div>
