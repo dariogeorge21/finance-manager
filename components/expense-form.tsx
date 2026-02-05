@@ -19,6 +19,10 @@ const expenseSchema = z.object({
   amount: z.number().min(0.01, 'Amount must be greater than 0'),
   date: z.string().min(1, 'Date is required'),
   category: z.string().min(1, 'Category is required'),
+  who: z.string().min(1, 'Who is required'),
+  phone_number: z.string().optional(),
+  payment_method: z.string().min(1, 'Payment method is required'),
+  approved_by: z.string().optional(),
 })
 
 type ExpenseFormData = z.infer<typeof expenseSchema>
@@ -32,15 +36,25 @@ interface ExpenseFormProps {
 }
 
 const categories = [
-  'Food & Dining',
-  'Transportation',
-  'Shopping',
-  'Entertainment',
+  'Food',
+  'Transport & Fuel',
+  'Resource Utilities',
+  'Program Expenses',
+  'Medical & Hospitality',
+  'Arts & Decoration',
+  'Intercession',
+  'Coordination',
   'Bills & Utilities',
-  'Healthcare',
-  'Education',
-  'Business',
-  'Travel',
+  'Travel Allowance',
+  'Other'
+]
+
+const paymentMethods = [
+  'Cash',
+  'UPI',
+  'Card',
+  'Cheque',
+  'Bank Transfer',
   'Other'
 ]
 
@@ -52,6 +66,10 @@ export function ExpenseForm({ isOpen, onClose, onSuccess, projectId, editData }:
     defaultValues: {
       date: new Date().toISOString().split('T')[0],
       category: 'Other',
+      payment_method: 'Cash',
+      who: '',
+      phone_number: '',
+      approved_by: '',
     }
   })
 
@@ -63,11 +81,19 @@ export function ExpenseForm({ isOpen, onClose, onSuccess, projectId, editData }:
         amount: editData.amount,
         date: editData.date,
         category: editData.category,
+        who: editData.who,
+        phone_number: editData.phone_number || '',
+        payment_method: editData.payment_method,
+        approved_by: editData.approved_by || '',
       })
     } else {
       reset({
         date: new Date().toISOString().split('T')[0],
         category: 'Other',
+        payment_method: 'Cash',
+        who: '',
+        phone_number: '',
+        approved_by: '',
       })
     }
   }, [editData, reset])
@@ -117,17 +143,50 @@ export function ExpenseForm({ isOpen, onClose, onSuccess, projectId, editData }:
         </DialogHeader>
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          
           <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
-            <Textarea
-              id="description"
-              placeholder="Grocery shopping, fuel, etc..."
-              rows={3}
-              {...register('description')}
+            <Label htmlFor="who">Who? *</Label>
+            <Input
+              id="who"
+              placeholder="Name of person"
+              {...register('who')}
             />
-            {errors.description && (
-              <p className="text-sm text-destructive">{errors.description.message}</p>
+            {errors.who && (
+              <p className="text-sm text-destructive">{errors.who.message}</p>
             )}
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="phone_number">Phone</Label>
+              <Input
+                id="phone_number"
+                placeholder="9876543210"
+                {...register('phone_number')}
+              />
+              {errors.phone_number && (
+                <p className="text-sm text-destructive">{errors.phone_number.message}</p>
+              )}
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="payment_method">Payment Method *</Label>
+              <Select onValueChange={(value) => setValue('payment_method', value)} defaultValue={editData?.payment_method || 'Cash'}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select method" />
+                </SelectTrigger>
+                <SelectContent>
+                  {paymentMethods.map((method) => (
+                    <SelectItem key={method} value={method}>
+                      {method}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.payment_method && (
+                <p className="text-sm text-destructive">{errors.payment_method.message}</p>
+              )}
+            </div>
           </div>
           
           <div className="grid grid-cols-2 gap-4">
@@ -174,6 +233,34 @@ export function ExpenseForm({ isOpen, onClose, onSuccess, projectId, editData }:
             </Select>
             {errors.category && (
               <p className="text-sm text-destructive">{errors.category.message}</p>
+            )}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="description">Description *</Label>
+            <Textarea
+              id="description"
+              placeholder="Grocery shopping, fuel, etc..."
+              rows={3}
+              {...register('description')}
+            />
+            {errors.description && (
+              <p className="text-sm text-destructive">{errors.description.message}</p>
+            )}
+          </div>
+          
+
+          
+          
+          <div className="space-y-2">
+            <Label htmlFor="approved_by">Approved By</Label>
+            <Input
+              id="approved_by"
+              placeholder="Approver name"
+              {...register('approved_by')}
+            />
+            {errors.approved_by && (
+              <p className="text-sm text-destructive">{errors.approved_by.message}</p>
             )}
           </div>
           

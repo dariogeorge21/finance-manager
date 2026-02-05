@@ -21,8 +21,13 @@ export const exportIncomeToCSV = (incomeData: Income[], projectName: string) => 
 export const exportExpensesToCSV = (expenseData: Expense[], projectName: string) => {
   const csvData = expenseData.map(item => ({
     'Description': item.description,
+    'Who': item.who,
+    'Phone': item.phone_number || '',
     'Amount': item.amount,
     'Category': item.category,
+    'Payment Method': item.payment_method,
+    'Verified': item.verified ? 'Yes' : 'No',
+    'Approved By': item.approved_by || '',
     'Date': item.date,
     'Created At': new Date(item.created_at).toLocaleDateString()
   }))

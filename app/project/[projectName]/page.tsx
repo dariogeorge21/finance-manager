@@ -71,6 +71,9 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
   // Toggle status update state
   const [updatingCalledStatus, setUpdatingCalledStatus] = useState<string | null>(null)
 
+  // Expense verified toggle state
+  const [updatingVerifiedStatus, setUpdatingVerifiedStatus] = useState<string | null>(null)
+
   // Privacy toggle state
   const [showAmounts, setShowAmounts] = useState(false)
 
@@ -260,6 +263,38 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
       toast.error('Network error. Please try again.')
     } finally {
       setUpdatingCalledStatus(null)
+    }
+  }
+
+  const handleToggleVerifiedStatus = async (expenseId: string, currentStatus: boolean) => {
+    if (!projectAuth) return
+
+    setUpdatingVerifiedStatus(expenseId)
+
+    try {
+      const response = await fetch(`/api/projects/${projectAuth.project_id}/expenses/${expenseId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verified: !currentStatus }),
+      })
+
+      if (response.ok) {
+        // Update the local state
+        setExpenses(prevExpenses =>
+          prevExpenses.map(item =>
+            item.id === expenseId
+              ? { ...item, verified: !currentStatus }
+              : item
+          )
+        )
+        toast.success('Verification status updated')
+      } else {
+        toast.error('Failed to update verification status')
+      }
+    } catch (error) {
+      toast.error('Network error')
+    } finally {
+      setUpdatingVerifiedStatus(null)
     }
   }
 
@@ -802,9 +837,11 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                         <TableHeader>
                           <TableRow>
                             <TableHead>Description</TableHead>
+                            <TableHead>Who</TableHead>
                             <TableHead>Category</TableHead>
+                            <TableHead>Payment Method</TableHead>
                             <TableHead>Amount</TableHead>
-                            <TableHead>Date</TableHead>
+                            <TableHead>Verified</TableHead>
                             <TableHead>Actions</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -813,12 +850,39 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                             <TableRow key={item.id}>
                               <TableCell className="font-medium">{item.description}</TableCell>
                               <TableCell>
+                                <div className="text-sm">
+                                  <div className="font-medium">{item.who}</div>
+                                  {item.phone_number && (
+                                    <div className="text-xs text-gray-500">{item.phone_number}</div>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
                                 <Badge variant="outline">{item.category}</Badge>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="secondary" className="text-xs">{item.payment_method}</Badge>
                               </TableCell>
                               <TableCell className="font-semibold text-red-600 transition-all duration-200">
                                 {displayAmount(item.amount)}
                               </TableCell>
-                              <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
+                              <TableCell>
+                                <button
+                                  type="button"
+                                  disabled={updatingVerifiedStatus === item.id}
+                                  onClick={() => handleToggleVerifiedStatus(item.id, item.verified)}
+                                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 ${
+                                    item.verified ? 'bg-green-600' : 'bg-gray-200'
+                                  }`}
+                                  title={item.verified ? 'Click to mark as unverified' : 'Click to mark as verified'}
+                                >
+                                  <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
+                                      item.verified ? 'translate-x-6' : 'translate-x-1'
+                                    }`}
+                                  />
+                                </button>
+                              </TableCell>
                               <TableCell>
                                 <div className="flex space-x-2">
                                   <Button
@@ -854,7 +918,16 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
                                 <h3 className="font-medium text-lg">{item.description}</h3>
-                                <Badge variant="outline" className="mt-1">{item.category}</Badge>
+                                <div className="text-sm text-gray-600 mt-1">
+                                  <div className="font-medium">{item.who}</div>
+                                  {item.phone_number && (
+                                    <div className="text-xs text-gray-500">{item.phone_number}</div>
+                                  )}
+                                </div>
+                                <div className="flex gap-2 mt-2">
+                                  <Badge variant="outline" className="text-xs">{item.category}</Badge>
+                                  <Badge variant="secondary" className="text-xs">{item.payment_method}</Badge>
+                                </div>
                               </div>
                               <div className="text-right ml-4">
                                 <p className="font-semibold text-red-600 text-lg transition-all duration-200">
@@ -863,6 +936,32 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
                                 <p className="text-sm text-gray-500">
                                   {new Date(item.date).toLocaleDateString()}
                                 </p>
+                              </div>
+                            </div>
+
+                            {item.approved_by && (
+                              <p className="text-sm text-gray-600">
+                                <span className="font-medium">Approved by:</span> {item.approved_by}
+                              </p>
+                            )}
+
+                            <div className="flex items-center justify-between pt-2 border-t">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-600">Verified:</span>
+                                <button
+                                  type="button"
+                                  disabled={updatingVerifiedStatus === item.id}
+                                  onClick={() => handleToggleVerifiedStatus(item.id, item.verified)}
+                                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 ${
+                                    item.verified ? 'bg-green-600' : 'bg-gray-200'
+                                  }`}
+                                >
+                                  <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
+                                      item.verified ? 'translate-x-6' : 'translate-x-1'
+                                    }`}
+                                  />
+                                </button>
                               </div>
                             </div>
 

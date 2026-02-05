@@ -26,6 +26,11 @@ export interface Expense {
   amount: number
   date: string
   category: string
+  who: string
+  phone_number?: string
+  verified: boolean
+  payment_method: string
+  approved_by?: string
   created_at: string
 }
 
@@ -62,6 +67,10 @@ export interface CreateExpenseData {
   amount: number
   date: string
   category?: string
+  who: string
+  phone_number?: string
+  payment_method: string
+  approved_by?: string
 }
 export interface ProjectSummary {
   id: string;
