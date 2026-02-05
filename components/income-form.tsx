@@ -9,12 +9,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
+
 import { LoadingSpinner } from './ui/loading-progress'
 import { toast } from 'sonner'
-import { Income, CallBooth } from '@/types'
-import { Users, Check } from 'lucide-react'
+import { Income } from '@/types'
 
 const incomeSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -38,10 +36,6 @@ interface IncomeFormProps {
 
 export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: IncomeFormProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const [contacts, setContacts] = useState<CallBooth[]>([])
-  const [isLoadingContacts, setIsLoadingContacts] = useState(false)
-  const [contactSelectorOpen, setContactSelectorOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
 
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<IncomeFormData>({
     resolver: zodResolver(incomeSchema),
@@ -57,39 +51,6 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
   })
 
   const calledStatus = watch('called_status')
-
-  // Fetch Call Booth contacts
-  const fetchContacts = async () => {
-    setIsLoadingContacts(true)
-    try {
-      const response = await fetch(`/api/projects/${projectId}/call-booth`)
-      const data = await response.json()
-
-      if (response.ok) {
-        setContacts(data.callBooth || [])
-      } else {
-        console.error('Failed to load contacts')
-      }
-    } catch (error) {
-      console.error('Network error loading contacts:', error)
-    } finally {
-      setIsLoadingContacts(false)
-    }
-  }
-
-  // Fetch contacts when form opens
-  useEffect(() => {
-    if (isOpen) {
-      fetchContacts()
-    }
-  }, [isOpen, projectId])
-
-  // Reset search query when popover closes
-  useEffect(() => {
-    if (!contactSelectorOpen) {
-      setSearchQuery('')
-    }
-  }, [contactSelectorOpen])
 
   // Date helpers: format ISO (yyyy-mm-dd) to dd/mm/yyyy and parse back
   const formatISOToDDMMYYYY = (isoDate: string | undefined) => {
@@ -184,25 +145,6 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
     onClose()
   }
 
-  const handleContactSelect = (contact: CallBooth) => {
-    // Use setValue with proper options to ensure the form state is updated correctly
-    setValue('name', contact.name, { shouldValidate: true, shouldDirty: true })
-    setValue('phone_number', contact.phone_number, { shouldValidate: true, shouldDirty: true })
-
-    // Don't close the popover immediately to maintain scroll functionality
-    // User can click outside or select another contact
-    toast.success('Contact details populated')
-  }
-
-  // Filter contacts based on search query
-  const filteredContacts = contacts.filter((contact) => {
-    const searchLower = searchQuery.toLowerCase()
-    return (
-      contact.name.toLowerCase().includes(searchLower) ||
-      contact.phone_number.toLowerCase().includes(searchLower)
-    )
-  })
-
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md max-h-[80vh] sm:max-h-[70vh] overflow-y-auto">
@@ -214,78 +156,6 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
         </DialogHeader>
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Contact Selector */}
-          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md border border-dashed">
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                Select from Call Booth contacts
-              </span>
-            </div>
-            <Popover open={contactSelectorOpen} onOpenChange={setContactSelectorOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={isLoadingContacts}
-                >
-                  {isLoadingContacts ? 'Loading...' : 'Select Contact'}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-0" align="end">
-                <Command shouldFilter={false}>
-                  <CommandInput
-                    placeholder="Search contacts..."
-                    value={searchQuery}
-                    onValueChange={setSearchQuery}
-                  />
-                  <CommandList>
-                    <CommandEmpty>
-                      {contacts.length === 0
-                        ? 'No contacts found. Add contacts in Call Booth first.'
-                        : 'No matching contacts found.'}
-                    </CommandEmpty>
-                    <CommandGroup>
-                      {filteredContacts.map((contact) => {
-                        const isSelected = watch('name') === contact.name && watch('phone_number') === contact.phone_number
-                        return (
-                          <CommandItem
-                            key={contact.id}
-                            value={`${contact.name}-${contact.phone_number}`}
-                            onSelect={() => handleContactSelect(contact)}
-                            className="cursor-pointer"
-                          >
-                            <div className="flex flex-col gap-1 flex-1">
-                              <div className="flex items-center justify-between">
-                                <span className="font-medium">{contact.name}</span>
-                                {isSelected && (
-                                  <Check className="h-4 w-4 text-emerald-600" />
-                                )}
-                              </div>
-                              <span className="text-sm text-muted-foreground">{contact.phone_number}</span>
-                            </div>
-                          </CommandItem>
-                        )
-                      })}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-                <div className="border-t p-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setContactSelectorOpen(false)}
-                    className="w-full"
-                  >
-                    Done
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="name">Name *</Label>
             <Input

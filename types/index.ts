@@ -81,30 +81,6 @@ export interface ContributionData {
   description?: string
 }
 
-export interface CallBooth {
-  id: string
-  project_id: string
-  name: string
-  phone_number: string
-  contacted: boolean
-  answered: boolean
-  created_at: string
-  updated_at: string
-}
-
-export interface CreateCallBoothData {
-  name: string
-  phone_number: string
-  contacted?: boolean
-  answered?: boolean
-}
-
-export interface UpdateCallBoothData {
-  name?: string
-  phone_number?: string
-  contacted?: boolean
-}
-
 export interface RazorpayOrder {
   id: string
   entity: string
