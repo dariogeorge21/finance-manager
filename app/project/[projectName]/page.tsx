@@ -201,9 +201,10 @@ export default function ProjectDashboard({ params }: { params: Promise<{ project
     if (!projectAuth || !deleteItem) return
 
     const { id, type } = deleteItem
+    const endpoint = type === 'expense' ? 'expenses' : 'income'
     
     try {
-      const response = await fetch(`/api/projects/${projectAuth.project_id}/${type}/${id}`, {
+      const response = await fetch(`/api/projects/${projectAuth.project_id}/${endpoint}/${id}`, {
         method: 'DELETE',
       })
 
