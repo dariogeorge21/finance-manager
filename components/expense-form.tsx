@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -49,16 +49,28 @@ export function ExpenseForm({ isOpen, onClose, onSuccess, projectId, editData }:
   
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
-    defaultValues: editData ? {
-      description: editData.description,
-      amount: editData.amount,
-      date: editData.date,
-      category: editData.category,
-    } : {
+    defaultValues: {
       date: new Date().toISOString().split('T')[0],
       category: 'Other',
     }
   })
+
+  // Handle editData changes - reset form when editData changes
+  useEffect(() => {
+    if (editData) {
+      reset({
+        description: editData.description,
+        amount: editData.amount,
+        date: editData.date,
+        category: editData.category,
+      })
+    } else {
+      reset({
+        date: new Date().toISOString().split('T')[0],
+        category: 'Other',
+      })
+    }
+  }, [editData, reset])
 
   const onSubmit = async (data: ExpenseFormData) => {
     setIsLoading(true)
