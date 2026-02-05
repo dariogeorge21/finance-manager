@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 import { LoadingSpinner } from './ui/loading-progress'
 import { toast } from 'sonner'
@@ -22,9 +23,14 @@ const incomeSchema = z.object({
   description: z.string().optional(),
   date: z.string().min(1),
   called_status: z.boolean(),
+  source: z.string().optional(),
+  payment_method: z.string().optional(),
 })
 
 type IncomeFormData = z.infer<typeof incomeSchema>
+
+const INCOME_SOURCES = ['Finance Call', 'Personal Commitment', 'Registration Fee', 'Donation', 'Coupon', 'Investment', 'Other']
+const PAYMENT_METHODS = ['UPI', 'Cash', 'Bank Transfer', 'Card', 'Cheque', 'Other']
 
 interface IncomeFormProps {
   isOpen: boolean
@@ -47,6 +53,8 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
       name: '',
       phone_number: '',
       description: '',
+      source: '',
+      payment_method: '',
     }
   })
 
@@ -95,6 +103,8 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
         description: editData.description || '',
         date: editData.date,
         called_status: editData.called_status,
+        source: editData.source || '',
+        payment_method: editData.payment_method || '',
       })
       setDateInput(formatISOToDDMMYYYY(editData.date))
     } else {
@@ -106,6 +116,8 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
         name: '',
         phone_number: '',
         description: '',
+        source: '',
+        payment_method: '',
       })
       setDateInput(formatISOToDDMMYYYY(new Date().toISOString().split('T')[0]))
     }
@@ -232,6 +244,38 @@ export function IncomeForm({ isOpen, onClose, onSuccess, projectId, editData }: 
               rows={3}
               {...register('description')}
             />
+          </div>
+
+            <div className="space-y-2">
+            <Label htmlFor="source">Income Source</Label>
+            <Select onValueChange={(value) => setValue('source', value)} defaultValue={watch('source') || 'Finance Call'}>
+              <SelectTrigger>
+              <SelectValue placeholder="Select source" />
+              </SelectTrigger>
+              <SelectContent>
+              {INCOME_SOURCES.map((src) => (
+                <SelectItem key={src} value={src}>
+                {src}
+                </SelectItem>
+              ))}
+              </SelectContent>
+            </Select>
+            </div>
+
+            <div className="space-y-2">
+            <Label htmlFor="payment_method">Payment Method</Label>
+            <Select onValueChange={(value) => setValue('payment_method', value)} defaultValue={watch('payment_method') || 'UPI'}>
+              <SelectTrigger>
+              <SelectValue placeholder="Select payment method" />
+              </SelectTrigger>
+              <SelectContent>
+              {PAYMENT_METHODS.map((method) => (
+                <SelectItem key={method} value={method}>
+                {method}
+                </SelectItem>
+              ))}
+              </SelectContent>
+            </Select>
           </div>
           
           <div className="flex items-center space-x-2">

@@ -16,6 +16,8 @@ export interface Income {
   date: string
   called_status: boolean
   called_by?: string
+  source?: string
+  payment_method?: string
   created_at: string
 }
 
@@ -60,6 +62,8 @@ export interface CreateIncomeData {
   date: string
   called_status?: boolean
   called_by?: string
+  source?: string
+  payment_method?: string
 }
 
 export interface CreateExpenseData {
